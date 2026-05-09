@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>SomaForm Live</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pool:      #07111f;
+  --deep:      #040c18;
+  --lane:      #0b1e35;
+  --water:     #0d7ec9;
+  --water-lit: #29b6f6;
+  --water-dim: #0a5a90;
+  --foam:      #e0f4ff;
+  --chalk:     #f0f8ff;
+  --amber:     #ffab00;
+  --green:     #00e5a0;
+  --red:       #ff3d5a;
+  --display:   'Bebas Neue', sans-serif;
+  --body:      'DM Sans', sans-serif;
+  --mono:      'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--deep);
+  color: var(--chalk);
+  font-family: var(--body);
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/* ─── SCREENS ─── */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+}
+.screen.active { display: flex; }
+
+/* ─── SETUP SCREEN ─── */
+#setupScreen {
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 32px 24px;
+  background: var(--deep);
+}
+
+.setup-logo {
+  font-family: var(--display);
+  font-size: 3.2rem;
+  letter-spacing: 0.06em;
+  color: var(--chalk);
+  line-height: 1;
+}
+.setup-logo span { color: var(--water-lit); }
+
+.setup-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--lane);
+  border: 1px solid #1a3a5c;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setup-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a7a9b;
+  margin-bottom: 4px;
+}
+
+.setup-input {
+  width: 100%;
+  background: var(--deep);
+  border: 1px solid #1a3a5c;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--chalk);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+.setup-input:focus { outline: 1px solid var(--water); border-color: var(--water); }
+
+.setup-swimmer {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.setup-swimmer .setup-input { flex: 1; }
+
+.btn-primary {
+  width: 100%;
+  background: var(--water);
+  color: var(--chalk);
+  border: none;
+  border-radius: 12px;
+  padding: 18px;
+  font-family: var(--display);
+  font-size: 1.6rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-primary:active { opacity: 0.8; }
+
+.btn-sm {
+  background: #1a3a5c;
+  color: var(--water-lit);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: var(--body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ─── LIVE SCREEN ─── */
+#liveScreen { background: var(--deep); position: relative; }
+
+#camFeed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.18;
+  transform: scaleX(-1); /* front camera mirror */
+}
+
+/* motion canvas hidden */
+#motionCanvas { display: none; }
+
+/* overlay layout */
+.live-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+/* top bar */
+.live-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px 10px;
+  pointer-events: all;
+}
+
+.live-logo {
+  font-family: var(--display);
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.7);
+}
+.live-logo span { color: var(--water-lit); }
+
+.session-info {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #4a7a9b;
+  text-align: right;
+  line-height: 1.6;
+}
+
+/* main status area */
+.live-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* waiting state */
+.waiting-ring {
+  width: 160px;
+  height: 160px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.waiting-ring svg {
+  position: absolute;
+  inset: 0;
+  animation: rotateRing 3s linear infinite;
+}
+
+@keyframes rotateRing {
+  to { transform: rotate(360deg); }
+}
+
+.waiting-icon {
+  font-size: 3.2rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.waiting-label {
+  font-family: var(--display);
+  font-size: 1.8rem;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+}
+
+.waiting-sub {
+  font-size: 0.82rem;
+  color: #3a6a9b;
+  text-align: center;
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+
+/* detecting state */
+.detecting-badge {
+  background: rgba(255,171,0,0.15);
+  border: 2px solid var(--amber);
+  border-radius: 40px;
+  padding: 10px 28px;
+  font-family: var(--display);
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: detectPulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes detectPulse {
+  from { box-shadow: 0 0 0 0 rgba(255,171,0,0.2); }
+  to   { box-shadow: 0 0 0 16px rgba(255,171,0,0); }
+}
+
+/* last rep mini display (shown in idle after first rep) */
+.last-rep-mini {
+  background: rgba(7,17,31,0.85);
+  border: 1px solid #1a3a5c;
+  border-radius: 16px;
+  padding: 16px 24px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.lrm-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a7a9b;
+  margin-bottom: 4px;
+}
+
+.lrm-score {
+  font-family: var(--display);
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.lrm-cue {
+  font-size: 0.82rem;
+  color: #7a9ab8;
+  margin-top: 4px;
+  max-width: 220px;
+}
+
+/* rep count ticker */
+.rep-ticker {
+  position: absolute;
+  top: 58px;
+  left: 20px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #2a5a7b;
+  letter-spacing: 0.06em;
+}
+
+/* ─── BIG FEEDBACK BUTTON ─── */
+.fab {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--water);
+  color: var(--chalk);
+  border: none;
+  border-radius: 60px;
+  padding: 20px 44px;
+  font-family: var(--display);
+  font-size: 1.8rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(13,126,201,0.5);
+  pointer-events: all;
+  transition: transform 0.12s, box-shadow 0.12s;
+  white-space: nowrap;
+}
+.fab:active {
+  transform: translateX(-50%) scale(0.96);
+  box-shadow: 0 4px 16px rgba(13,126,201,0.4);
+}
+
+/* ─── SKILL MENU SCREEN ─── */
+#menuScreen {
+  background: var(--pool);
+  padding: 0;
+}
+
+.menu-header {
+  background: var(--lane);
+  border-bottom: 2px solid var(--water);
+  padding: 20px 24px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu-title {
+  font-family: var(--display);
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+  color: var(--chalk);
+}
+
+.btn-back {
+  background: #0d2240;
+  border: 1px solid #1a3a5c;
+  color: var(--water-lit);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.menu-sub {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4a7a9b;
+  padding: 18px 24px 10px;
+}
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 20px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.skill-btn {
+  background: var(--lane);
+  border: 1px solid #1a3a5c;
+  border-radius: 14px;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.skill-btn:active { background: #0d2240; border-color: var(--water); }
+
+.skill-btn.has-data { border-color: #1a4a6c; }
+.skill-btn.has-data::after {
+  content: attr(data-count);
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: #3a7a9b;
+}
+
+.skill-icon { font-size: 2.4rem; }
+
+.skill-name {
+  font-family: var(--display);
+  font-size: 1.3rem;
+  letter-spacing: 0.06em;
+  color: var(--chalk);
+}
+
+.skill-avg {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: #4a7a9b;
+}
+
+/* ─── FEEDBACK SCREEN ─── */
+#feedbackScreen {
+  background: var(--pool);
+  overflow-y: auto;
+}
+
+.fb-header {
+  background: var(--lane);
+  border-bottom: 2px solid var(--water);
+  padding: 20px 24px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.fb-title {
+  font-family: var(--display);
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+}
+
+/* view tabs */
+.fb-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--deep);
+  border-radius: 10px;
+  padding: 3px;
+  margin: 16px 20px;
+}
+
+.fb-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #4a7a9b;
+  font-family: var(--body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 9px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.fb-tab.active { background: var(--water); color: var(--chalk); }
+
+/* big score hero */
+.score-hero {
+  text-align: center;
+  padding: 24px 20px 16px;
+}
+
+.score-big {
+  font-family: var(--display);
+  font-size: 7rem;
+  line-height: 1;
+  transition: color 0.3s;
+}
+
+.score-denom {
+  font-family: var(--display);
+  font-size: 2.5rem;
+  color: #2a4a6b;
+  margin-left: 4px;
+}
+
+.score-context {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4a7a9b;
+  margin-top: 4px;
+}
+
+/* cue banner */
+.cue-banner {
+  margin: 0 20px 16px;
+  background: rgba(255,171,0,0.08);
+  border-left: 4px solid var(--amber);
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+}
+
+.cue-banner-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 5px;
+}
+
+.cue-banner-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--chalk);
+}
+
+/* phase breakdown */
+.phase-section {
+  padding: 0 20px 16px;
+}
+
+.phase-section-title {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a7a9b;
+  margin-bottom: 12px;
+}
+
+.phase-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.phase-name-col {
+  width: 80px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7a9ab8;
+  flex-shrink: 0;
+}
+
+.phase-bar-track {
+  flex: 1;
+  height: 8px;
+  background: #0a1e38;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.phase-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.phase-score-col {
+  width: 32px;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* best/worst */
+.bw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px 24px;
+}
+
+.bw-card {
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.bw-card.best  { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); }
+.bw-card.worst { background: rgba(255,61,90,0.08);  border: 1px solid rgba(255,61,90,0.2); }
+
+.bw-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.bw-card.best  .bw-label { color: var(--green); }
+.bw-card.worst .bw-label { color: var(--red); }
+
+.bw-score {
+  font-family: var(--display);
+  font-size: 3rem;
+  line-height: 1;
+}
+.bw-card.best  .bw-score { color: var(--green); }
+.bw-card.worst .bw-score { color: var(--red); }
+
+.bw-cue {
+  font-size: 0.75rem;
+  color: #7a9ab8;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* coach report */
+.coach-section {
+  margin: 0 20px 24px;
+  background: var(--lane);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.coach-section-title {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a7a9b;
+  margin-bottom: 10px;
+}
+
+.coach-text {
+  font-size: 0.88rem;
+  line-height: 1.75;
+  color: #b0cce6;
+  white-space: pre-wrap;
+}
+
+/* ─── ANALYSING OVERLAY ─── */
+#analysingOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,12,24,0.92);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+}
+#analysingOverlay.active { display: flex; }
+
+.analysing-ring {
+  width: 80px; height: 80px;
+  border: 3px solid #1a3a5c;
+  border-top-color: var(--water-lit);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.analysing-label {
+  font-family: var(--display);
+  font-size: 1.8rem;
+  letter-spacing: 0.1em;
+  color: var(--water-lit);
+}
+
+.analysing-sub {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: #4a7a9b;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Utilities ─── */
+.score-high { color: var(--green); }
+.score-mid  { color: var(--amber); }
+.score-low  { color: var(--red);   }
+.fill-high  { background: var(--green); }
+.fill-mid   { background: var(--amber); }
+.fill-low   { background: var(--red);   }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ═══ SETUP SCREEN ═══ -->
+<div id="setupScreen" class="screen active">
+  <div class="setup-logo">Soma<span>Form</span> <span style="font-size:1rem;color:#4a7a9b;font-family:var(--mono)">LIVE</span></div>
+  <div class="setup-card">
+    <div>
+      <div class="setup-label">Anthropic API Key</div>
+      <input class="setup-input" type="password" id="apiKeyInput" placeholder="sk-ant-...">
+    </div>
+    <div>
+      <div class="setup-label">Swimmer Name (optional)</div>
+      <div class="setup-swimmer">
+        <input class="setup-input" type="text" id="swimmerInput" placeholder="e.g. Alex">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="startSession()">START SESSION</button>
+  </div>
+  <div style="font-family:var(--mono);font-size:0.7rem;color:#2a4a6b;text-align:center;padding:8px 24px;line-height:1.6">
+    Camera will use front-facing lens · Keep phone at end of lane on stand<br>
+    AGPL v3 · Framework: Dr. E.W. Maglischo
+  </div>
+</div>
+
+<!-- ═══ LIVE SCREEN ═══ -->
+<div id="liveScreen" class="screen">
+  <video id="camFeed" autoplay playsinline muted></video>
+  <canvas id="motionCanvas"></canvas>
+
+  <div class="live-overlay">
+    <div class="live-topbar">
+      <div class="live-logo">Soma<span>Form</span></div>
+      <div class="session-info">
+        <div id="swimmerLabel" style="color:var(--water-lit);font-weight:600"></div>
+        <div id="sessionTimer">00:00</div>
+        <div id="repCountLabel">0 reps</div>
+      </div>
+    </div>
+
+    <div class="live-center" id="liveCenter">
+
+      <!-- WAITING STATE -->
+      <div id="waitingState">
+        <div class="waiting-ring">
+          <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="80" cy="80" r="74" stroke="#1a3a5c" stroke-width="2"/>
+            <circle cx="80" cy="80" r="74" stroke="url(#ringGrad)" stroke-width="2"
+                    stroke-dasharray="120 350" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="ringGrad" x1="0" y1="0" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#0d7ec9"/>
+                <stop offset="100%" stop-color="#29b6f6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="waiting-icon">🏊</div>
+        </div>
+        <div class="waiting-label">WAITING FOR<br>SWIMMER</div>
+        <div class="waiting-sub">Motion detection active</div>
+      </div>
+
+      <!-- DETECTING STATE -->
+      <div id="detectingState" class="hidden">
+        <div class="detecting-badge">
+          <span>⚡</span> SWIMMER DETECTED
+        </div>
+        <div class="waiting-sub" style="margin-top:12px;color:#4a7a9b">Recording rep…</div>
+      </div>
+
+      <!-- LAST REP MINI (shown in idle after first rep) -->
+      <div id="lastRepMini" class="last-rep-mini hidden" style="margin-top:16px">
+        <div class="lrm-label">Last Rep</div>
+        <div class="lrm-score" id="lrmScore">—</div>
+        <div class="lrm-cue" id="lrmCue"></div>
+      </div>
+
+    </div>
+
+    <!-- BIG FAB -->
+    <button class="fab" onclick="showMenu()">📊 VIEW FEEDBACK</button>
+  </div>
+</div>
+
+<!-- ═══ SKILL MENU SCREEN ═══ -->
+<div id="menuScreen" class="screen">
+  <div class="menu-header">
+    <div class="menu-title">SELECT SKILL</div>
+    <button class="btn-back" onclick="showLive()">← BACK</button>
+  </div>
+  <div class="menu-sub">What do you want to review?</div>
+  <div class="skill-grid" id="skillGrid">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- ═══ FEEDBACK SCREEN ═══ -->
+<div id="feedbackScreen" class="screen">
+  <div class="fb-header">
+    <div class="fb-title" id="fbTitle">FREESTYLE</div>
+    <button class="btn-back" onclick="showMenu()">← SKILLS</button>
+  </div>
+
+  <div class="fb-tabs">
+    <button class="fb-tab active" onclick="setFbTab('last')">Last Rep</button>
+    <button class="fb-tab" onclick="setFbTab('avg')">Average</button>
+    <button class="fb-tab" onclick="setFbTab('best')">Best</button>
+    <button class="fb-tab" onclick="setFbTab('worst')">Worst</button>
+  </div>
+
+  <div class="score-hero">
+    <span class="score-big" id="fbScoreBig">—</span><span class="score-denom">/10</span>
+    <div class="score-context" id="fbScoreContext"></div>
+  </div>
+
+  <div class="cue-banner" id="fbCueBanner">
+    <div class="cue-banner-label">🎯 Key Focus</div>
+    <div class="cue-banner-text" id="fbCueText"></div>
+  </div>
+
+  <div class="phase-section">
+    <div class="phase-section-title">Phase Breakdown</div>
+    <div id="fbPhaseList"></div>
+  </div>
+
+  <div class="bw-grid">
+    <div class="bw-card best">
+      <div class="bw-label">Session Best</div>
+      <div class="bw-score" id="bwBestScore">—</div>
+      <div class="bw-cue" id="bwBestCue"></div>
+    </div>
+    <div class="bw-card worst">
+      <div class="bw-label">Session Worst</div>
+      <div class="bw-score" id="bwWorstScore">—</div>
+      <div class="bw-cue" id="bwWorstCue"></div>
+    </div>
+  </div>
+
+  <div class="coach-section" id="coachSection">
+    <div class="coach-section-title">Coach Report — Last Rep</div>
+    <div class="coach-text" id="fbCoachText"></div>
+  </div>
+</div>
+
+<!-- ═══ ANALYSING OVERLAY ═══ -->
+<div id="analysingOverlay">
+  <div class="analysing-ring"></div>
+  <div class="analysing-label">ANALYSING</div>
+  <div class="analysing-sub" id="analysingSubLabel">Processing stroke mechanics…</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const SKILLS = [
+  { id: 'freestyle',    name: 'Freestyle',    icon: '🏊' },
+  { id: 'backstroke',   name: 'Backstroke',   icon: '🔄' },
+  { id: 'breaststroke', name: 'Breaststroke', icon: '🐸' },
+  { id: 'butterfly',    name: 'Butterfly',    icon: '🦋' },
+  { id: 'turn',         name: 'Turn',         icon: '↩️' },
+  { id: 'pushoff',      name: 'Push-Off',     icon: '🚀' },
+];
+
+let apiKey       = '';
+let swimmerName  = '';
+let sessionStart = null;
+let sessionTimer = null;
+
+// DB: { skillId: [ repResult, ... ] }
+// repResult: { ts, stroke, overall, key_cue, phases, coach_report }
+let db = {};
+
+let motionFrames   = [];
+let lastFrame      = null;
+let swimmerPresent = false;
+let repInProgress  = false;
+let motionTimeout  = null;
+let captureCanvas  = null;
+let captureCtx     = null;
+
+let currentSkillId = null;
+let currentFbTab   = 'last';
+
+// ═══════════════════════════════════════════════
+// SETUP
+// ═══════════════════════════════════════════════
+async function startSession() {
+  apiKey      = document.getElementById('apiKeyInput').value.trim();
+  swimmerName = document.getElementById('swimmerInput').value.trim() || 'Swimmer';
+  if (!apiKey) { alert('Please enter your Anthropic API key.'); return; }
+
+  // Init DB buckets
+  SKILLS.forEach(s => { db[s.id] = []; });
+
+  showScreen('liveScreen');
+  document.getElementById('swimmerLabel').textContent = swimmerName;
+  sessionStart = Date.now();
+  sessionTimer = setInterval(updateTimer, 1000);
+  buildSkillGrid();
+  await startCamera();
+  startMotionDetection();
+}
+
+function updateTimer() {
+  const s = Math.floor((Date.now() - sessionStart) / 1000);
+  const m = Math.floor(s / 60);
+  document.getElementById('sessionTimer').textContent =
+    String(m).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0');
+}
+
+// ═══════════════════════════════════════════════
+// CAMERA
+// ═══════════════════════════════════════════════
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    const cam = document.getElementById('camFeed');
+    cam.srcObject = stream;
+    await new Promise(r => cam.onloadedmetadata = r);
+
+    // Setup motion canvas
+    captureCanvas = document.getElementById('motionCanvas');
+    captureCanvas.width  = cam.videoWidth;
+    captureCanvas.height = cam.videoHeight;
+    captureCtx = captureCanvas.getContext('2d', { willReadFrequently: true });
+  } catch(e) {
+    alert('Camera access denied. Please allow camera and reload.\n' + e.message);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// MOTION DETECTION
+// ═══════════════════════════════════════════════
+const MOTION_THRESHOLD  = 28;   // pixel diff threshold per channel
+const MOTION_PIXELS_PCT = 0.04; // 4% of pixels must change
+const MOTION_HOLD_MS    = 2200; // hold after last motion before rep ends
+
+function startMotionDetection() {
+  requestAnimationFrame(motionLoop);
+}
+
+function motionLoop() {
+  if (!captureCtx) { requestAnimationFrame(motionLoop); return; }
+  const cam = document.getElementById('camFeed');
+  if (cam.readyState < 2) { requestAnimationFrame(motionLoop); return; }
+
+  captureCtx.drawImage(cam, 0, 0, captureCanvas.width, captureCanvas.height);
+  const cur = captureCtx.getImageData(0, 0, captureCanvas.width, captureCanvas.height);
+
+  if (lastFrame) {
+    const moved = motionScore(lastFrame.data, cur.data, captureCanvas.width * captureCanvas.height);
+    if (moved > MOTION_PIXELS_PCT) {
+      onMotionDetected(cam);
+    } else {
+      onMotionAbsent();
+    }
+  }
+
+  lastFrame = cur;
+  requestAnimationFrame(motionLoop);
+}
+
+function motionScore(a, b, total) {
+  let changed = 0;
+  // Sample every 8th pixel for speed
+  for (let i = 0; i < a.length; i += 32) {
+    const dr = Math.abs(a[i]   - b[i]);
+    const dg = Math.abs(a[i+1] - b[i+1]);
+    const db = Math.abs(a[i+2] - b[i+2]);
+    if ((dr + dg + db) / 3 > MOTION_THRESHOLD) changed++;
+  }
+  return changed / (total / 8);
+}
+
+function onMotionDetected(cam) {
+  if (motionTimeout) { clearTimeout(motionTimeout); motionTimeout = null; }
+
+  if (!swimmerPresent) {
+    swimmerPresent = true;
+    document.getElementById('waitingState').classList.add('hidden');
+    document.getElementById('detectingState').classList.remove('hidden');
+  }
+
+  if (!repInProgress) {
+    repInProgress = true;
+    // Capture a frame ~1s after detection (swimmer filling frame)
+    setTimeout(() => captureRepFrame(cam), 1000);
+  }
+
+  // Set timer: if no more motion for MOTION_HOLD_MS → rep ended
+  motionTimeout = setTimeout(onRepEnded, MOTION_HOLD_MS);
+}
+
+function onMotionAbsent() {
+  // motionTimeout already handles the end; nothing else needed here
+}
+
+function onRepEnded() {
+  if (!swimmerPresent) return;
+  swimmerPresent = false;
+  repInProgress  = false;
+  document.getElementById('detectingState').classList.add('hidden');
+  document.getElementById('waitingState').classList.remove('hidden');
+}
+
+let repFrameData = null;
+
+function captureRepFrame(cam) {
+  // Grab the current frame as base64 JPEG for API
+  const c = document.createElement('canvas');
+  c.width  = cam.videoWidth;
+  c.height = cam.videoHeight;
+  c.getContext('2d').drawImage(cam, 0, 0);
+  repFrameData = c.toDataURL('image/jpeg', 0.82).split(',')[1];
+  analyseRep();
+}
+
+// ═══════════════════════════════════════════════
+// ANALYSIS
+// ═══════════════════════════════════════════════
+async function analyseRep() {
+  if (!repFrameData) return;
+  showAnalysing(true);
+
+  const prompt = `You are SomaForm, a poolside swimming technique analyser grounded in the biomechanical framework of Dr. Ernest W. Maglischo (Swimming Fastest, 2003).
+
+This frame is from a camera at the END of a swimming lane. Analyse what you can see:
+- Stroke/skill type (auto-detect from the image)
+- Approach mechanics (if visible)
+- Into the wall / touch position
+- Turn execution
+- Push-off angle and streamline
+- Breakout
+
+Respond ONLY with valid JSON, no markdown, no preamble:
+
+{
+  "stroke": "freestyle|backstroke|breaststroke|butterfly|turn|pushoff|unknown",
+  "overall": <0-10>,
+  "key_cue": "<single most important coaching point, plain language, max 12 words>",
+  "phases": [
+    { "name": "Approach",  "score": <0-10>, "visible": true|false },
+    { "name": "Into Wall", "score": <0-10>, "visible": true|false },
+    { "name": "Turn",      "score": <0-10>, "visible": true|false },
+    { "name": "Push-Off",  "score": <0-10>, "visible": true|false },
+    { "name": "Breakout",  "score": <0-10>, "visible": true|false }
+  ],
+  "coach_report": "<biomechanical detail for the coach, 100-180 words, reference Maglischo principles>"
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: repFrameData } },
+            { type: 'text',  text: prompt }
+          ]
+        }]
+      })
+    });
+    const data  = await res.json();
+    const raw   = (data.content || []).map(b => b.text || '').join('');
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const rep   = JSON.parse(clean);
+    rep.ts      = Date.now();
+
+    saveRep(rep);
+    updateLastRepMini(rep);
+    repFrameData = null;
+  } catch(e) {
+    console.error('Analysis error:', e);
+  } finally {
+    showAnalysing(false);
+  }
+}
+
+function saveRep(rep) {
+  // Map detected stroke to skill bucket
+  const skillId = mapStrokeToSkill(rep.stroke);
+  if (!db[skillId]) db[skillId] = [];
+  db[skillId].push(rep);
+
+  // Also save to 'all' if you want cross-skill aggregates later
+  const count = Object.values(db).reduce((s,a) => s + a.length, 0);
+  document.getElementById('repCountLabel').textContent = count + (count === 1 ? ' rep' : ' reps');
+  buildSkillGrid(); // refresh counts
+}
+
+function mapStrokeToSkill(stroke) {
+  const map = {
+    freestyle: 'freestyle', backstroke: 'backstroke',
+    breaststroke: 'breaststroke', butterfly: 'butterfly',
+    turn: 'turn', pushoff: 'pushoff', push_off: 'pushoff'
+  };
+  return map[stroke] || 'freestyle';
+}
+
+// ═══════════════════════════════════════════════
+// UI UPDATES
+// ═══════════════════════════════════════════════
+function updateLastRepMini(rep) {
+  const cls = scoreClass(rep.overall);
+  const el  = document.getElementById('lrmScore');
+  el.textContent = rep.overall.toFixed(1);
+  el.className   = `lrm-score score-${cls}`;
+  document.getElementById('lrmCue').textContent = rep.key_cue || '';
+  document.getElementById('lastRepMini').classList.remove('hidden');
+}
+
+function buildSkillGrid() {
+  const grid = document.getElementById('skillGrid');
+  grid.innerHTML = '';
+  SKILLS.forEach(skill => {
+    const reps  = db[skill.id] || [];
+    const count = reps.length;
+    const avg   = count ? (reps.reduce((s,r) => s + r.overall, 0) / count).toFixed(1) : null;
+    const btn   = document.createElement('button');
+    btn.className = 'skill-btn' + (count > 0 ? ' has-data' : '');
+    if (count > 0) btn.setAttribute('data-count', count + ' rep' + (count>1?'s':''));
+    btn.innerHTML = `
+      <div class="skill-icon">${skill.icon}</div>
+      <div class="skill-name">${skill.name.toUpperCase()}</div>
+      <div class="skill-avg">${avg ? 'Avg: ' + avg : 'No data yet'}</div>`;
+    btn.onclick = () => showFeedback(skill.id);
+    grid.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// FEEDBACK SCREEN
+// ═══════════════════════════════════════════════
+function showFeedback(skillId) {
+  const reps = db[skillId] || [];
+  if (!reps.length) {
+    alert('No reps recorded for this skill yet this session.');
+    return;
+  }
+  currentSkillId = skillId;
+  currentFbTab   = 'last';
+
+  const skill = SKILLS.find(s => s.id === skillId);
+  document.getElementById('fbTitle').textContent = (skill?.icon || '') + ' ' + (skill?.name || skillId).toUpperCase();
+
+  // Pre-fill best/worst always visible
+  const sorted = [...reps].sort((a,b) => b.overall - a.overall);
+  const best   = sorted[0];
+  const worst  = sorted[sorted.length - 1];
+  document.getElementById('bwBestScore').textContent  = best.overall.toFixed(1);
+  document.getElementById('bwBestCue').textContent    = best.key_cue || '';
+  document.getElementById('bwWorstScore').textContent = worst.overall.toFixed(1);
+  document.getElementById('bwWorstCue').textContent   = worst.key_cue || '';
+
+  renderFbTab('last');
+  showScreen('feedbackScreen');
+}
+
+function setFbTab(tab) {
+  currentFbTab = tab;
+  document.querySelectorAll('.fb-tab').forEach(b =>
+    b.classList.toggle('active', b.textContent.toLowerCase().startsWith(tab.slice(0,3)))
+  );
+  renderFbTab(tab);
+}
+
+function renderFbTab(tab) {
+  const reps = db[currentSkillId] || [];
+  if (!reps.length) return;
+
+  let rep, contextLabel;
+
+  if (tab === 'last') {
+    rep = reps[reps.length - 1];
+    contextLabel = 'Most recent rep';
+  } else if (tab === 'avg') {
+    rep = averageRep(reps);
+    contextLabel = `Average of ${reps.length} rep${reps.length>1?'s':''}`;
+  } else if (tab === 'best') {
+    rep = [...reps].sort((a,b) => b.overall - a.overall)[0];
+    contextLabel = 'Best rep this session';
+  } else {
+    rep = [...reps].sort((a,b) => a.overall - b.overall)[0];
+    contextLabel = 'Worst rep this session';
+  }
+
+  const cls = scoreClass(rep.overall);
+  const scoreEl = document.getElementById('fbScoreBig');
+  scoreEl.textContent = Number(rep.overall).toFixed(1);
+  scoreEl.className   = `score-big score-${cls}`;
+  document.getElementById('fbScoreContext').textContent = contextLabel;
+  document.getElementById('fbCueText').textContent      = rep.key_cue || '';
+
+  // phases
+  const phaseList = document.getElementById('fbPhaseList');
+  phaseList.innerHTML = '';
+  (rep.phases || []).filter(p => p.visible !== false).forEach(p => {
+    const pc  = scoreClass(p.score);
+    const row = document.createElement('div');
+    row.className = 'phase-row';
+    row.innerHTML = `
+      <div class="phase-name-col">${p.name}</div>
+      <div class="phase-bar-track">
+        <div class="phase-bar-fill fill-${pc}" style="width:${(p.score/10)*100}%"></div>
+      </div>
+      <div class="phase-score-col score-${pc}">${Number(p.score).toFixed(1)}</div>`;
+    phaseList.appendChild(row);
+  });
+
+  // coach report (last rep only makes narrative sense)
+  const coachEl = document.getElementById('fbCoachText');
+  const lastRep = reps[reps.length - 1];
+  coachEl.textContent = lastRep.coach_report || '';
+  document.getElementById('coachSection').querySelector('.coach-section-title').textContent =
+    tab === 'last' ? 'Coach Report — Last Rep' : 'Coach Report — Last Rep (for reference)';
+}
+
+function averageRep(reps) {
+  // Average overall and each phase score
+  const n = reps.length;
+  const avgOverall = reps.reduce((s,r) => s + r.overall, 0) / n;
+
+  // Merge phases
+  const phaseNames = (reps[0].phases || []).map(p => p.name);
+  const avgPhases  = phaseNames.map(name => {
+    const visible  = reps.some(r => (r.phases||[]).find(p => p.name === name)?.visible);
+    const scores   = reps.map(r => (r.phases||[]).find(p => p.name === name)?.score || 0);
+    return { name, score: scores.reduce((a,b) => a+b, 0) / n, visible };
+  });
+
+  // Most common key_cue (just use last rep's)
+  return {
+    overall: avgOverall,
+    key_cue: reps[reps.length-1].key_cue,
+    phases:  avgPhases,
+    coach_report: reps[reps.length-1].coach_report
+  };
+}
+
+// ═══════════════════════════════════════════════
+// SCREEN NAVIGATION
+// ═══════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showMenu()     { buildSkillGrid(); showScreen('menuScreen'); }
+function showLive()     { showScreen('liveScreen'); }
+function showAnalysing(on) {
+  document.getElementById('analysingOverlay').classList.toggle('active', on);
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function scoreClass(s) {
+  if (s >= 7.5) return 'high';
+  if (s >= 5)   return 'mid';
+  return 'low';
+}
+</script>
+</body>
+</html>
