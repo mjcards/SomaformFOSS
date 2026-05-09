@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SomaForm — Poolside Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── Design tokens ── */
+  :root {
+    --pool:      #0a1628;
+    --deep:      #061020;
+    --lane:      #0d2240;
+    --water:     #0e7ac4;
+    --water-lit: #1fa3f5;
+    --foam:      #e8f4fd;
+    --chalk:     #ffffff;
+    --amber:     #f0a500;
+    --green:     #00c98d;
+    --red:       #f04060;
+    --score-bg:  #0d2240;
+    --radius:    12px;
+    --mono:      'DM Mono', monospace;
+    --display:   'Bebas Neue', sans-serif;
+    --body:      'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--deep);
+    color: var(--chalk);
+    font-family: var(--body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--pool);
+    border-bottom: 2px solid var(--water);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-size: 2rem;
+    letter-spacing: 0.06em;
+    color: var(--chalk);
+    line-height: 1;
+  }
+
+  .logo span { color: var(--water-lit); }
+
+  .mode-toggle {
+    display: flex;
+    gap: 6px;
+    background: var(--deep);
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  .mode-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    color: #7a9ab8;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .mode-btn.active {
+    background: var(--water);
+    color: var(--chalk);
+  }
+
+  /* ── API Key bar ── */
+  .api-bar {
+    background: var(--lane);
+    border-bottom: 1px solid #1a3a5c;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .api-bar label {
+    font-size: 0.75rem;
+    font-family: var(--mono);
+    color: #7a9ab8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .api-bar input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--deep);
+    border: 1px solid #1a3a5c;
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--chalk);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+  }
+
+  .api-bar input:focus { outline: 1px solid var(--water); border-color: var(--water); }
+
+  /* ── Main layout ── */
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 0;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  @media (max-width: 800px) {
+    main { grid-template-columns: 1fr; padding: 16px; }
+  }
+
+  /* ── Upload zone ── */
+  .capture-zone {
+    background: var(--pool);
+    border: 2px dashed #1a3a5c;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .capture-zone.has-video { border-style: solid; border-color: var(--water); }
+  .capture-zone.dragover  { border-color: var(--water-lit); background: #0a1e38; }
+
+  #preview {
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    display: none;
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  #preview.visible { display: block; }
+
+  .upload-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: #4a7a9b;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .upload-prompt svg { opacity: 0.5; }
+
+  .upload-prompt p { font-size: 0.9rem; line-height: 1.5; }
+
+  .upload-prompt strong { color: var(--water-lit); }
+
+  .upload-btn {
+    background: var(--water);
+    color: var(--chalk);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-family: var(--body);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+
+  .upload-btn:hover { background: var(--water-lit); }
+
+  #fileInput { display: none; }
+
+  /* ── Stroke selector ── */
+  .stroke-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .stroke-chip {
+    padding: 6px 16px;
+    border: 1px solid #1a3a5c;
+    border-radius: 20px;
+    background: transparent;
+    color: #7a9ab8;
+    font-family: var(--body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .stroke-chip.active {
+    background: var(--water);
+    border-color: var(--water);
+    color: var(--chalk);
+  }
+
+  /* ── Analyse button ── */
+  .analyse-btn {
+    width: 100%;
+    margin-top: 16px;
+    background: linear-gradient(135deg, var(--water) 0%, #0558a0 100%);
+    color: var(--chalk);
+    border: none;
+    border-radius: 10px;
+    padding: 16px;
+    font-family: var(--display);
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .analyse-btn:hover { opacity: 0.92; }
+  .analyse-btn:active { transform: scale(0.99); }
+  .analyse-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .analyse-btn .spinner {
+    display: none;
+    width: 20px; height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+  }
+
+  .analyse-btn.loading .spinner { display: block; }
+  .analyse-btn.loading .btn-text { display: none; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Right panel ── */
+  .results-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── Swimmer display (big scores) ── */
+  .swimmer-display {
+    background: var(--score-bg);
+    border-radius: var(--radius);
+    border: 1px solid #1a3a5c;
+    padding: 20px;
+    display: none;
+  }
+
+  .swimmer-display.visible { display: block; }
+
+  .display-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4a7a9b;
+    margin-bottom: 16px;
+  }
+
+  .overall-score {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .score-num {
+    font-family: var(--display);
+    font-size: 5rem;
+    line-height: 1;
+    color: var(--chalk);
+  }
+
+  .score-denom {
+    font-family: var(--display);
+    font-size: 2rem;
+    color: #4a7a9b;
+  }
+
+  .score-label {
+    font-size: 0.85rem;
+    color: #7a9ab8;
+    font-weight: 500;
+  }
+
+  /* Phase bars */
+  .phase-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .phase-row { display: flex; flex-direction: column; gap: 4px; }
+
+  .phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .phase-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #a0c4e0;
+  }
+
+  .phase-score-val {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .phase-bar-track {
+    height: 6px;
+    background: #0a1e38;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .phase-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  /* ── Key cue card ── */
+  .cue-card {
+    background: var(--pool);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 14px 16px;
+    display: none;
+  }
+
+  .cue-card.visible { display: block; }
+
+  .cue-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+
+  .cue-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--chalk);
+  }
+
+  /* ── Coach detail ── */
+  .coach-detail {
+    background: var(--pool);
+    border: 1px solid #1a3a5c;
+    border-radius: var(--radius);
+    padding: 18px;
+    display: none;
+  }
+
+  .coach-detail.visible { display: block; }
+
+  .coach-detail h3 {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4a7a9b;
+    margin-bottom: 14px;
+  }
+
+  .coach-text {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #c0d8ee;
+    white-space: pre-wrap;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 40px 20px;
+    color: #2a4a6b;
+    text-align: center;
+    border: 1px dashed #1a3a5c;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .empty-state svg { opacity: 0.3; margin-bottom: 8px; }
+
+  /* ── Attribution footer ── */
+  footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 0.72rem;
+    color: #2a4a6b;
+    font-family: var(--mono);
+    border-top: 1px solid #0d2240;
+  }
+
+  footer a { color: #3a6a9b; text-decoration: none; }
+
+  /* ── Score colours ── */
+  .score-high   { color: var(--green); }
+  .score-mid    { color: var(--amber); }
+  .score-low    { color: var(--red);   }
+  .fill-high    { background: var(--green); }
+  .fill-mid     { background: var(--amber); }
+  .fill-low     { background: var(--red);   }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Soma<span>Form</span></div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="setMode('coach')">Coach</button>
+    <button class="mode-btn" onclick="setMode('swimmer')">Swimmer Display</button>
+  </div>
+</header>
+
+<div class="api-bar">
+  <label>Anthropic API Key</label>
+  <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+</div>
+
+<main>
+  <!-- Left: capture -->
+  <div>
+    <div class="capture-zone" id="captureZone"
+         ondragover="handleDragOver(event)"
+         ondragleave="handleDragLeave(event)"
+         ondrop="handleDrop(event)">
+      <video id="preview" playsinline muted controls></video>
+      <div class="upload-prompt" id="uploadPrompt">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="6" width="20" height="14" rx="2"/>
+          <circle cx="12" cy="13" r="3"/>
+          <path d="M7 6V5a2 2 0 012-2h6a2 2 0 012 2v1"/>
+        </svg>
+        <p><strong>Poolside video analysis</strong><br>
+        Upload a clip from the end of the lane.<br>
+        Approach · Turn · Push-off · Breakout</p>
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+          📹 Select Video
+        </button>
+      </div>
+      <input type="file" id="fileInput" accept="video/*,image/*" onchange="handleFile(event)">
+    </div>
+
+    <div class="stroke-row">
+      <button class="stroke-chip active" onclick="selectStroke(this,'auto')">Auto-detect</button>
+      <button class="stroke-chip" onclick="selectStroke(this,'freestyle')">Freestyle</button>
+      <button class="stroke-chip" onclick="selectStroke(this,'backstroke')">Backstroke</button>
+      <button class="stroke-chip" onclick="selectStroke(this,'breaststroke')">Breaststroke</button>
+      <button class="stroke-chip" onclick="selectStroke(this,'butterfly')">Butterfly</button>
+    </div>
+
+    <button class="analyse-btn" id="analyseBtn" onclick="analyse()" disabled>
+      <span class="btn-text">ANALYSE</span>
+      <div class="spinner"></div>
+    </button>
+  </div>
+
+  <!-- Right: results -->
+  <div class="results-panel" id="resultsPanel">
+
+    <div class="swimmer-display" id="swimmerDisplay">
+      <div class="display-title">Overall Score</div>
+      <div class="overall-score">
+        <div class="score-num" id="overallScore">—</div>
+        <div class="score-denom">/10</div>
+      </div>
+      <div class="phase-list" id="phaseList"></div>
+    </div>
+
+    <div class="cue-card" id="cueCard">
+      <div class="cue-label">🎯 Key Focus</div>
+      <div class="cue-text" id="cueText"></div>
+    </div>
+
+    <div class="coach-detail" id="coachDetail">
+      <h3>Coach Report</h3>
+      <div class="coach-text" id="coachText"></div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+      </svg>
+      Upload a poolside video and tap Analyse to see biomechanical feedback here.
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  SomaForm is open source · <a href="https://github.com/YOUR_USERNAME/somaform">GitHub</a> · AGPL v3 ·
+  Framework grounded in the work of Dr. Ernest W. Maglischo
+</footer>
+
+<script>
+// ── State ──
+let selectedStroke = 'auto';
+let mediaData      = null;
+let mediaType      = null; // 'video' | 'image'
+let currentMode    = 'coach';
+
+// ── Mode ──
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent.toLowerCase().startsWith(mode))
+  );
+  // Swimmer display mode: hide coach detail
+  const detail = document.getElementById('coachDetail');
+  if (detail.classList.contains('visible')) {
+    detail.style.display = mode === 'swimmer' ? 'none' : '';
+  }
+}
+
+// ── Stroke ──
+function selectStroke(el, stroke) {
+  document.querySelectorAll('.stroke-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedStroke = stroke;
+}
+
+// ── File handling ──
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  loadFile(file);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('captureZone').classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+  document.getElementById('captureZone').classList.remove('dragover');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('captureZone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) loadFile(file);
+}
+
+function loadFile(file) {
+  const preview = document.getElementById('preview');
+  const prompt  = document.getElementById('uploadPrompt');
+  const zone    = document.getElementById('captureZone');
+
+  mediaType = file.type.startsWith('image') ? 'image' : 'video';
+
+  if (mediaType === 'video') {
+    preview.src = URL.createObjectURL(file);
+    preview.classList.add('visible');
+    prompt.style.display = 'none';
+    zone.classList.add('has-video');
+
+    // Extract a frame for analysis
+    preview.addEventListener('loadeddata', () => {
+      preview.currentTime = Math.min(1, preview.duration * 0.4);
+    });
+    preview.addEventListener('seeked', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width  = preview.videoWidth;
+      canvas.height = preview.videoHeight;
+      canvas.getContext('2d').drawImage(preview, 0, 0);
+      mediaData = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+    });
+  } else {
+    preview.style.display = 'none';
+    // Show as image
+    const img = document.createElement('img');
+    img.style.cssText = 'max-width:100%;max-height:420px;object-fit:contain;border-radius:10px;';
+    img.src = URL.createObjectURL(file);
+    zone.innerHTML = '';
+    zone.appendChild(img);
+    zone.classList.add('has-video');
+
+    const reader = new FileReader();
+    reader.onload = ev => { mediaData = ev.target.result.split(',')[1]; };
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById('analyseBtn').disabled = false;
+}
+
+// ── Analysis ──
+async function analyse() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { alert('Please enter your Anthropic API key.'); return; }
+  if (!mediaData) { alert('Please upload a video or image first.'); return; }
+
+  const btn = document.getElementById('analyseBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  document.getElementById('emptyState').style.display = 'none';
+
+  const strokeNote = selectedStroke === 'auto'
+    ? 'Identify the stroke automatically from what you can see.'
+    : `The stroke being performed is ${selectedStroke}.`;
+
+  const prompt = `You are SomaForm, a poolside swimming technique analyser grounded in the biomechanical framework established by Dr. Ernest W. Maglischo (Swimming Fastest, 2003).
+
+This image is from a camera positioned at the end of a swimming lane. ${strokeNote}
+
+Analyse what you can see across these phases (assess only the phases visible):
+- Approach stroke mechanics
+- Into the wall (touch position, body alignment)
+- Turn execution (tumble or open)
+- Push-off (angle, streamline, depth)
+- Breakout (underwater kick, timing, first stroke)
+
+Respond ONLY with a valid JSON object, no markdown, no preamble:
+
+{
+  "stroke": "freestyle|backstroke|breaststroke|butterfly|unknown",
+  "overall": <0-10 number>,
+  "key_cue": "<single most important coaching cue, plain language, max 12 words>",
+  "phases": [
+    { "name": "Approach", "score": <0-10>, "visible": true|false },
+    { "name": "Into Wall", "score": <0-10>, "visible": true|false },
+    { "name": "Turn", "score": <0-10>, "visible": true|false },
+    { "name": "Push-Off", "score": <0-10>, "visible": true|false },
+    { "name": "Breakout", "score": <0-10>, "visible": true|false }
+  ],
+  "coach_report": "<detailed biomechanical observations for the coach, 120-200 words, reference specific Maglischo principles where relevant>"
+}`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: mediaData } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const raw  = data.content.map(b => b.text || '').join('');
+    const json = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    renderResults(json);
+  } catch (err) {
+    alert('Analysis failed. Check your API key and try again.\n\n' + err.message);
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
+// ── Render ──
+function scoreClass(s) {
+  if (s >= 7.5) return 'high';
+  if (s >= 5)   return 'mid';
+  return 'low';
+}
+
+function renderResults(data) {
+  // Overall
+  const overall = data.overall ?? 0;
+  const cls     = scoreClass(overall);
+  const scoreEl = document.getElementById('overallScore');
+  scoreEl.textContent = overall.toFixed(1);
+  scoreEl.className   = `score-num score-${cls}`;
+
+  // Phases
+  const phaseList = document.getElementById('phaseList');
+  phaseList.innerHTML = '';
+  (data.phases || []).filter(p => p.visible).forEach(p => {
+    const pc = scoreClass(p.score);
+    const row = document.createElement('div');
+    row.className = 'phase-row';
+    row.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-name">${p.name}</span>
+        <span class="phase-score-val score-${pc}">${p.score.toFixed(1)}</span>
+      </div>
+      <div class="phase-bar-track">
+        <div class="phase-bar-fill fill-${pc}" style="width:${(p.score/10)*100}%"></div>
+      </div>`;
+    phaseList.appendChild(row);
+  });
+
+  // Swimmer cue
+  document.getElementById('cueText').textContent = data.key_cue || '';
+
+  // Coach report
+  let report = data.coach_report || '';
+  if (data.stroke && data.stroke !== 'unknown') {
+    report = `Stroke detected: ${data.stroke.toUpperCase()}\n\n` + report;
+  }
+  document.getElementById('coachText').textContent = report;
+
+  // Show panels
+  document.getElementById('swimmerDisplay').classList.add('visible');
+  document.getElementById('cueCard').classList.add('visible');
+  document.getElementById('coachDetail').classList.add('visible');
+  if (currentMode === 'swimmer') {
+    document.getElementById('coachDetail').style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>

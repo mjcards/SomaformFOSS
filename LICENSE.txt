@@ -1,0 +1,52 @@
+                    GNU AFFERO GENERAL PUBLIC LICENSE
+                       Version 3, 19 November 2007
+
+Copyright (C) 2026 Mike (SomaForm Contributors)
+
+Everyone is permitted to copy and distribute verbatim copies of this license
+document, but changing it is not allowed.
+
+                            PREAMBLE
+
+The GNU Affero General Public License is a free, copyleft license for
+software and other kinds of works, specifically designed to ensure cooperation
+with the community in the case of network server software.
+
+SomaForm — Open-Source Swimming Technique Analysis
+Copyright (C) 2026 Mike and contributors
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+---
+
+COMMERCIAL SERVICES NOTICE
+
+This license covers the SomaForm software only. Coaching services, technique
+analysis reports, squad programmes, and professional consultancy delivered by
+qualified SomaForm coaches are separate commercial offerings and are not
+governed by this license.
+
+If you build a hosted service using SomaForm code, the AGPL requires you to
+make your modified source code available to your users.
+
+---
+
+ATTRIBUTION NOTICE
+
+SomaForm's analytical framework draws on the biomechanical principles
+established by Dr. Ernest W. Maglischo, as documented in his foundational
+works including Swimming Fastest (Human Kinetics, 2003) and A Primer for
+Swimming Coaches (Nova Science Publishers). We are grateful for his lifetime
+of contribution to swimming science and encourage anyone using SomaForm to
+study his work directly.
