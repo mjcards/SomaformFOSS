@@ -873,9 +873,10 @@ let repFrameDataUrl = null; // for thumbnail display
 
 let currentSkillId = null;
 let currentFbTab   = 'last';
+let latestRep = null;
 
 const MOTION_THRESHOLD  = 28;
-const MOTION_PIXELS_PCT = 0.04;
+const MOTION_PIXELS_PCT = 0.065;
 const MOTION_HOLD_MS    = 2200;
 
 // ═══════════════════════════════════════════════════════
@@ -886,7 +887,13 @@ async function startSession() {
   swimmerName = document.getElementById('swimmerInput').value.trim() || 'Swimmer';
   if (!apiKey) { alert('Please enter your Anthropic API key.'); return; }
 
+  const savedDb = localStorage.getItem('somaform_db');
+
+if (savedDb) {
+  db = JSON.parse(savedDb);
+} else {
   SKILLS.forEach(s => { db[s.id] = []; });
+}
   showScreen('liveScreen');
   document.getElementById('swimmerLabel').textContent = swimmerName;
   sessionStart = Date.now();
@@ -894,6 +901,7 @@ async function startSession() {
   buildSkillGrid();
   await startCamera();
   startMotionDetection();
+  showIdleCoachingCard();
 }
 
 function updateTimer() {
@@ -909,7 +917,11 @@ function updateTimer() {
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { exact: 'user' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      video: {
+  facingMode: 'user',
+  width: { ideal: 1280 },
+  height: { ideal: 720 }
+},
       audio: false
     });
     const cam = document.getElementById('camFeed');
@@ -1068,13 +1080,31 @@ Use encouraging, plain spoken coaching language throughout — as if talking to 
 }
 
 function saveRep(rep) {
+
   const skillId = mapStrokeToSkill(rep.stroke);
+
   if (!db[skillId]) db[skillId] = [];
+
   db[skillId].push(rep);
 
+  latestRep = rep;
+
+  localStorage.setItem('somaform_db', JSON.stringify(db));
+
   const count = Object.values(db).reduce((s,a) => s + a.length, 0);
-  document.getElementById('repCountLabel').textContent = count + (count === 1 ? ' rep' : ' reps');
+
+  document.getElementById('repCountLabel').textContent =
+    count + (count === 1 ? ' rep' : ' reps');
+
   buildSkillGrid();
+
+  const allReps = Object.values(db).flat();
+
+if (allReps.length) {
+  latestRep = allReps.sort((a,b) => b.ts - a.ts)[0];
+}
+
+  showIdleCoachingCard();
 }
 
 function mapStrokeToSkill(stroke) {
@@ -1089,7 +1119,33 @@ function mapStrokeToSkill(stroke) {
 // ═══════════════════════════════════════════════════════
 // LIVE SCREEN UI
 // ═══════════════════════════════════════════════════════
-function updateLastRepMini(rep) {
+
+  function showIdleCoachingCard() {
+
+  document.getElementById('detectingState').classList.add('hidden');
+
+showIdleCoachingCard();
+  waiting.classList.add('hidden');
+
+  mini.classList.remove('hidden');
+
+  // no reps yet
+  if (!latestRep) {
+
+    const score = document.getElementById('lrmScore');
+    score.textContent = 'BEST';
+    score.className = 'lrm-score score-high';
+
+    document.getElementById('lrmCue').textContent =
+      'Keep hips high · relaxed head · long line';
+
+    return;
+  }
+
+  updateLastRepMini(latestRep);
+}
+  
+  function updateLastRepMini(rep) {
   const cls = scoreClass(rep.overall);
   const el  = document.getElementById('lrmScore');
   el.textContent = rep.overall.toFixed(1);
