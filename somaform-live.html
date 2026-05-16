@@ -550,6 +550,43 @@ html, body {
 .score-mid  { color: var(--amber); }
 .score-low  { color: var(--red);   }
 .hidden { display: none !important; }
+
+.privacy-banner {
+  position: absolute;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(4,12,24,0.82);
+  border: 1px solid #1a3a5c;
+  border-radius: 8px;
+  padding: 7px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+
+.privacy-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #00e5a0;
+  flex-shrink: 0;
+  animation: privBlink 2s ease-in-out infinite;
+}
+@keyframes privBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.privacy-text {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4a7a9b;
+}
 </style>
 </head>
 <body>
@@ -618,6 +655,11 @@ html, body {
         <div class="lrm-score" id="lrmScore">—</div>
         <div class="lrm-cue" id="lrmCue"></div>
       </div>
+    </div>
+
+    <div class="privacy-banner">
+      <div class="privacy-dot"></div>
+      <div class="privacy-text">No video recorded — analysis only</div>
     </div>
 
     <button class="fab" onclick="showMenu()">📊 VIEW FEEDBACK</button>
@@ -867,7 +909,7 @@ function updateTimer() {
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      video: { facingMode: { exact: 'user' }, width: { ideal: 1280 }, height: { ideal: 720 } },
       audio: false
     });
     const cam = document.getElementById('camFeed');
@@ -1250,4 +1292,3 @@ function showMenu() { showScreen('menuScreen'); }
 </script>
 </body>
 </html>
-
