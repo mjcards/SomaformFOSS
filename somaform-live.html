@@ -37,12 +37,7 @@ html, body {
 }
 
 /* ─── SCREENS ─── */
-.screen {
-  position: fixed;
-  inset: 0;
-  display: none;
-  flex-direction: column;
-}
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; }
 .screen.active { display: flex; }
 
 /* ─── SETUP SCREEN ─── */
@@ -96,13 +91,6 @@ html, body {
 }
 .setup-input:focus { outline: 1px solid var(--water); border-color: var(--water); }
 
-.setup-swimmer {
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-}
-.setup-swimmer .setup-input { flex: 1; }
-
 .btn-primary {
   width: 100%;
   background: var(--water);
@@ -118,18 +106,6 @@ html, body {
 }
 .btn-primary:active { opacity: 0.8; }
 
-.btn-sm {
-  background: #1a3a5c;
-  color: var(--water-lit);
-  border: none;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-family: var(--body);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 /* ─── LIVE SCREEN ─── */
 #liveScreen { background: var(--deep); position: relative; }
 
@@ -140,13 +116,11 @@ html, body {
   height: 100%;
   object-fit: cover;
   opacity: 0.18;
-  transform: scaleX(-1); /* front camera mirror */
+  transform: scaleX(-1);
 }
 
-/* motion canvas hidden */
 #motionCanvas { display: none; }
 
-/* overlay layout */
 .live-overlay {
   position: absolute;
   inset: 0;
@@ -155,7 +129,6 @@ html, body {
   pointer-events: none;
 }
 
-/* top bar */
 .live-topbar {
   display: flex;
   justify-content: space-between;
@@ -180,7 +153,6 @@ html, body {
   line-height: 1.6;
 }
 
-/* main status area */
 .live-center {
   flex: 1;
   display: flex;
@@ -190,34 +162,20 @@ html, body {
   gap: 16px;
 }
 
-/* waiting state */
 .waiting-ring {
-  width: 160px;
-  height: 160px;
+  width: 160px; height: 160px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.waiting-ring svg { position: absolute; inset: 0; animation: rotateRing 3s linear infinite; }
+@keyframes rotateRing { to { transform: rotate(360deg); } }
 
-.waiting-ring svg {
-  position: absolute;
-  inset: 0;
-  animation: rotateRing 3s linear infinite;
-}
-
-@keyframes rotateRing {
-  to { transform: rotate(360deg); }
-}
-
-.waiting-icon {
-  font-size: 3.2rem;
-  animation: pulse 2s ease-in-out infinite;
-}
-
+.waiting-icon { font-size: 3.2rem; animation: pulse 2s ease-in-out infinite; }
 @keyframes pulse {
   0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.08); }
+  50%       { opacity: 1;   transform: scale(1.08); }
 }
 
 .waiting-label {
@@ -236,7 +194,6 @@ html, body {
   letter-spacing: 0.05em;
 }
 
-/* detecting state */
 .detecting-badge {
   background: rgba(255,171,0,0.15);
   border: 2px solid var(--amber);
@@ -251,13 +208,12 @@ html, body {
   gap: 10px;
   animation: detectPulse 0.8s ease-in-out infinite alternate;
 }
-
 @keyframes detectPulse {
   from { box-shadow: 0 0 0 0 rgba(255,171,0,0.2); }
   to   { box-shadow: 0 0 0 16px rgba(255,171,0,0); }
 }
 
-/* last rep mini display (shown in idle after first rep) */
+/* last rep mini */
 .last-rep-mini {
   background: rgba(7,17,31,0.85);
   border: 1px solid #1a3a5c;
@@ -265,7 +221,6 @@ html, body {
   padding: 16px 24px;
   text-align: center;
   backdrop-filter: blur(8px);
-  pointer-events: none;
 }
 
 .lrm-label {
@@ -277,31 +232,10 @@ html, body {
   margin-bottom: 4px;
 }
 
-.lrm-score {
-  font-family: var(--display);
-  font-size: 4rem;
-  line-height: 1;
-}
+.lrm-score { font-family: var(--display); font-size: 4rem; line-height: 1; }
+.lrm-cue   { font-size: 0.82rem; color: #7a9ab8; margin-top: 4px; max-width: 220px; }
 
-.lrm-cue {
-  font-size: 0.82rem;
-  color: #7a9ab8;
-  margin-top: 4px;
-  max-width: 220px;
-}
-
-/* rep count ticker */
-.rep-ticker {
-  position: absolute;
-  top: 58px;
-  left: 20px;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: #2a5a7b;
-  letter-spacing: 0.06em;
-}
-
-/* ─── BIG FEEDBACK BUTTON ─── */
+/* fab */
 .fab {
   position: absolute;
   bottom: 28px;
@@ -321,16 +255,10 @@ html, body {
   transition: transform 0.12s, box-shadow 0.12s;
   white-space: nowrap;
 }
-.fab:active {
-  transform: translateX(-50%) scale(0.96);
-  box-shadow: 0 4px 16px rgba(13,126,201,0.4);
-}
+.fab:active { transform: translateX(-50%) scale(0.96); box-shadow: 0 4px 16px rgba(13,126,201,0.4); }
 
-/* ─── SKILL MENU SCREEN ─── */
-#menuScreen {
-  background: var(--pool);
-  padding: 0;
-}
+/* ─── SKILL MENU ─── */
+#menuScreen { background: var(--pool); padding: 0; }
 
 .menu-header {
   background: var(--lane);
@@ -341,12 +269,7 @@ html, body {
   justify-content: space-between;
 }
 
-.menu-title {
-  font-family: var(--display);
-  font-size: 2rem;
-  letter-spacing: 0.08em;
-  color: var(--chalk);
-}
+.menu-title { font-family: var(--display); font-size: 2rem; letter-spacing: 0.08em; color: var(--chalk); }
 
 .btn-back {
   background: #0d2240;
@@ -391,39 +314,23 @@ html, body {
   transition: border-color 0.15s, background 0.15s;
   position: relative;
 }
-.skill-btn:active { background: #0d2240; border-color: var(--water); }
-
+.skill-btn:active  { background: #0d2240; border-color: var(--water); }
 .skill-btn.has-data { border-color: #1a4a6c; }
 .skill-btn.has-data::after {
   content: attr(data-count);
   position: absolute;
-  top: 10px;
-  right: 12px;
+  top: 10px; right: 12px;
   font-family: var(--mono);
   font-size: 0.65rem;
   color: #3a7a9b;
 }
 
-.skill-icon { font-size: 2.4rem; }
-
-.skill-name {
-  font-family: var(--display);
-  font-size: 1.3rem;
-  letter-spacing: 0.06em;
-  color: var(--chalk);
-}
-
-.skill-avg {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  color: #4a7a9b;
-}
+.skill-icon  { font-size: 2.4rem; }
+.skill-name  { font-family: var(--display); font-size: 1.3rem; letter-spacing: 0.06em; color: var(--chalk); }
+.skill-avg   { font-family: var(--mono); font-size: 0.75rem; color: #4a7a9b; }
 
 /* ─── FEEDBACK SCREEN ─── */
-#feedbackScreen {
-  background: var(--pool);
-  overflow-y: auto;
-}
+#feedbackScreen { background: var(--pool); overflow-y: auto; }
 
 .fb-header {
   background: var(--lane);
@@ -437,20 +344,16 @@ html, body {
   z-index: 10;
 }
 
-.fb-title {
-  font-family: var(--display);
-  font-size: 2rem;
-  letter-spacing: 0.08em;
-}
+.fb-title { font-family: var(--display); font-size: 2rem; letter-spacing: 0.08em; }
 
-/* view tabs */
+/* tabs */
 .fb-tabs {
   display: flex;
   gap: 0;
   background: var(--deep);
   border-radius: 10px;
   padding: 3px;
-  margin: 16px 20px;
+  margin: 14px 16px;
 }
 
 .fb-tab {
@@ -459,7 +362,7 @@ html, body {
   border: none;
   color: #4a7a9b;
   font-family: var(--body);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   padding: 9px 4px;
   border-radius: 8px;
@@ -470,11 +373,8 @@ html, body {
 }
 .fb-tab.active { background: var(--water); color: var(--chalk); }
 
-/* big score hero */
-.score-hero {
-  text-align: center;
-  padding: 24px 20px 16px;
-}
+/* score hero */
+.score-hero { text-align: center; padding: 20px 20px 12px; }
 
 .score-big {
   font-family: var(--display);
@@ -483,176 +383,150 @@ html, body {
   transition: color 0.3s;
 }
 
-.score-denom {
-  font-family: var(--display);
-  font-size: 2.5rem;
-  color: #2a4a6b;
-  margin-left: 4px;
-}
+.score-denom { font-family: var(--display); font-size: 2.5rem; color: #2a4a6b; margin-left: 4px; }
+.score-context { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #4a7a9b; margin-top: 4px; }
 
-.score-context {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #4a7a9b;
-  margin-top: 4px;
-}
-
-/* cue banner */
+/* key cue banner */
 .cue-banner {
-  margin: 0 20px 16px;
+  margin: 0 16px 14px;
   background: rgba(255,171,0,0.08);
   border-left: 4px solid var(--amber);
   border-radius: 0 12px 12px 0;
-  padding: 14px 18px;
+  padding: 12px 16px;
 }
+.cue-banner-label { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin-bottom: 5px; }
+.cue-banner-text  { font-size: 1rem; font-weight: 600; line-height: 1.4; color: var(--chalk); }
 
-.cue-banner-label {
+/* ══════════════════════════════════════
+   TRAFFIC-LIGHT SKILL CARDS
+══════════════════════════════════════ */
+.cards-section { padding: 0 16px 16px; }
+
+.cards-section-title {
   font-family: var(--mono);
   font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--amber);
-  margin-bottom: 5px;
-}
-
-.cue-banner-text {
-  font-size: 1.05rem;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--chalk);
-}
-
-/* phase breakdown */
-.phase-section {
-  padding: 0 20px 16px;
-}
-
-.phase-section-title {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #4a7a9b;
-  margin-bottom: 12px;
-}
-
-.phase-row {
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 8px;
 }
+.cards-section-title::after { content: ''; flex: 1; height: 1px; background: #1a3a5c; }
 
-.phase-name-col {
-  width: 80px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #7a9ab8;
-  flex-shrink: 0;
-}
+.skill-cards { display: flex; flex-direction: column; gap: 10px; }
 
-.phase-bar-track {
-  flex: 1;
-  height: 8px;
-  background: #0a1e38;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.phase-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.5s ease;
-}
-
-.phase-score-col {
-  width: 32px;
-  text-align: right;
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  font-weight: 500;
-  flex-shrink: 0;
-}
-
-/* best/worst */
-.bw-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 0 20px 24px;
-}
-
-.bw-card {
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-}
-
-.bw-card.best  { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); }
-.bw-card.worst { background: rgba(255,61,90,0.08);  border: 1px solid rgba(255,61,90,0.2); }
-
-.bw-label {
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.bw-card.best  .bw-label { color: var(--green); }
-.bw-card.worst .bw-label { color: var(--red); }
-
-.bw-score {
-  font-family: var(--display);
-  font-size: 3rem;
-  line-height: 1;
-}
-.bw-card.best  .bw-score { color: var(--green); }
-.bw-card.worst .bw-score { color: var(--red); }
-
-.bw-cue {
-  font-size: 0.75rem;
-  color: #7a9ab8;
-  margin-top: 6px;
-  line-height: 1.4;
-}
-
-/* coach report */
-.coach-section {
-  margin: 0 20px 24px;
+.skill-card {
   background: var(--lane);
   border-radius: 12px;
-  padding: 18px;
+  overflow: hidden;
+  border: 1px solid #1a3a5c;
+  animation: cardIn 0.25s ease both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.coach-section-title {
+.skill-card.status-green { border-left: 4px solid var(--green); }
+.skill-card.status-amber { border-left: 4px solid var(--amber); }
+.skill-card.status-red   { border-left: 4px solid var(--red);   }
+
+/* card top: thumbnail | diagram | status */
+.card-top { display: flex; align-items: stretch; height: 88px; }
+
+.card-thumb {
+  width: 96px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  background: #020810;
+}
+.card-thumb img { width: 100%; height: 100%; object-fit: cover; opacity: 0.82; display: block; }
+.card-thumb .no-thumb {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: #1a3a5c;
+  font-size: 0.6rem;
   font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #4a7a9b;
-  margin-bottom: 10px;
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: 4px;
 }
 
-.coach-text {
-  font-size: 0.88rem;
-  line-height: 1.75;
-  color: #b0cce6;
-  white-space: pre-wrap;
+.card-diagram {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: #060e1c;
 }
+.card-diagram svg { width: 100%; max-width: 110px; height: auto; }
 
-/* ─── ANALYSING OVERLAY ─── */
-#analysingOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(4,12,24,0.92);
-  display: none;
+.card-status {
+  width: 66px;
+  flex-shrink: 0;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 3px;
+  padding: 8px 4px;
+}
+
+.status-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.status-green .status-dot { background: rgba(0,229,160,0.15); color: var(--green); border: 2px solid var(--green); }
+.status-amber .status-dot { background: rgba(255,171,0,0.15);  color: var(--amber); border: 2px solid var(--amber); }
+.status-red   .status-dot { background: rgba(255,61,90,0.15);  color: var(--red);   border: 2px solid var(--red);   }
+
+.status-word { font-family: var(--mono); font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.status-green .status-word { color: var(--green); }
+.status-amber .status-word { color: var(--amber); }
+.status-red   .status-word { color: var(--red);   }
+
+.status-score { font-family: var(--display); font-size: 1.2rem; line-height: 1; }
+.status-green .status-score { color: var(--green); }
+.status-amber .status-score { color: var(--amber); }
+.status-red   .status-score { color: var(--red);   }
+
+.card-body { padding: 10px 14px; border-top: 1px solid #0d2240; }
+.card-phase-name { font-family: var(--mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: #4a7a9b; margin-bottom: 3px; }
+.card-cue        { font-size: 0.9rem; font-weight: 600; line-height: 1.4; color: var(--chalk); }
+.card-detail     { margin-top: 4px; font-size: 0.76rem; line-height: 1.5; color: #7a9ab8; }
+
+/* best/worst summary */
+.bw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px; }
+.bw-card { border-radius: 12px; padding: 14px; text-align: center; }
+.bw-card.best  { background: rgba(0,229,160,0.08);  border: 1px solid rgba(0,229,160,0.2); }
+.bw-card.worst { background: rgba(255,61,90,0.08);   border: 1px solid rgba(255,61,90,0.2); }
+.bw-label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+.bw-card.best  .bw-label { color: var(--green); }
+.bw-card.worst .bw-label { color: var(--red); }
+.bw-score { font-family: var(--display); font-size: 2.8rem; line-height: 1; }
+.bw-card.best  .bw-score { color: var(--green); }
+.bw-card.worst .bw-score { color: var(--red); }
+.bw-cue { font-size: 0.72rem; color: #7a9ab8; margin-top: 4px; line-height: 1.4; }
+
+/* coach report */
+.coach-section { margin: 0 16px 24px; background: var(--lane); border-radius: 12px; padding: 16px; }
+.coach-section-title { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: #4a7a9b; margin-bottom: 10px; }
+.coach-text { font-size: 0.85rem; line-height: 1.75; color: #b0cce6; white-space: pre-wrap; }
+
+/* ─── ANALYSING OVERLAY ─── */
+#analysingOverlay {
+  position: fixed; inset: 0;
+  background: rgba(4,12,24,0.92);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
   gap: 20px;
   z-index: 200;
   backdrop-filter: blur(4px);
@@ -668,34 +542,19 @@ html, body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.analysing-label {
-  font-family: var(--display);
-  font-size: 1.8rem;
-  letter-spacing: 0.1em;
-  color: var(--water-lit);
-}
+.analysing-label { font-family: var(--display); font-size: 1.8rem; letter-spacing: 0.1em; color: var(--water-lit); }
+.analysing-sub   { font-family: var(--mono); font-size: 0.75rem; color: #4a7a9b; letter-spacing: 0.08em; }
 
-.analysing-sub {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  color: #4a7a9b;
-  letter-spacing: 0.08em;
-}
-
-/* ─── Utilities ─── */
+/* utilities */
 .score-high { color: var(--green); }
 .score-mid  { color: var(--amber); }
 .score-low  { color: var(--red);   }
-.fill-high  { background: var(--green); }
-.fill-mid   { background: var(--amber); }
-.fill-low   { background: var(--red);   }
-
 .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<!-- ═══ SETUP SCREEN ═══ -->
+<!-- ═══ SETUP ═══ -->
 <div id="setupScreen" class="screen active">
   <div class="setup-logo">Soma<span>Form</span> <span style="font-size:1rem;color:#4a7a9b;font-family:var(--mono)">LIVE</span></div>
   <div class="setup-card">
@@ -705,19 +564,16 @@ html, body {
     </div>
     <div>
       <div class="setup-label">Swimmer Name (optional)</div>
-      <div class="setup-swimmer">
-        <input class="setup-input" type="text" id="swimmerInput" placeholder="e.g. Alex">
-      </div>
+      <input class="setup-input" type="text" id="swimmerInput" placeholder="e.g. Alex">
     </div>
     <button class="btn-primary" onclick="startSession()">START SESSION</button>
   </div>
   <div style="font-family:var(--mono);font-size:0.7rem;color:#2a4a6b;text-align:center;padding:8px 24px;line-height:1.6">
-    Camera will use front-facing lens · Keep phone at end of lane on stand<br>
-    AGPL v3 · Framework: Dr. E.W. Maglischo
+    Camera at lane end · AGPL v3 · Framework: Dr. E.W. Maglischo
   </div>
 </div>
 
-<!-- ═══ LIVE SCREEN ═══ -->
+<!-- ═══ LIVE ═══ -->
 <div id="liveScreen" class="screen">
   <video id="camFeed" autoplay playsinline muted></video>
   <canvas id="motionCanvas"></canvas>
@@ -733,8 +589,6 @@ html, body {
     </div>
 
     <div class="live-center" id="liveCenter">
-
-      <!-- WAITING STATE -->
       <div id="waitingState">
         <div class="waiting-ring">
           <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -754,41 +608,33 @@ html, body {
         <div class="waiting-sub">Motion detection active</div>
       </div>
 
-      <!-- DETECTING STATE -->
       <div id="detectingState" class="hidden">
-        <div class="detecting-badge">
-          <span>⚡</span> SWIMMER DETECTED
-        </div>
+        <div class="detecting-badge"><span>⚡</span> SWIMMER DETECTED</div>
         <div class="waiting-sub" style="margin-top:12px;color:#4a7a9b">Recording rep…</div>
       </div>
 
-      <!-- LAST REP MINI (shown in idle after first rep) -->
       <div id="lastRepMini" class="last-rep-mini hidden" style="margin-top:16px">
         <div class="lrm-label">Last Rep</div>
         <div class="lrm-score" id="lrmScore">—</div>
         <div class="lrm-cue" id="lrmCue"></div>
       </div>
-
     </div>
 
-    <!-- BIG FAB -->
     <button class="fab" onclick="showMenu()">📊 VIEW FEEDBACK</button>
   </div>
 </div>
 
-<!-- ═══ SKILL MENU SCREEN ═══ -->
+<!-- ═══ SKILL MENU ═══ -->
 <div id="menuScreen" class="screen">
   <div class="menu-header">
     <div class="menu-title">SELECT SKILL</div>
     <button class="btn-back" onclick="showLive()">← BACK</button>
   </div>
   <div class="menu-sub">What do you want to review?</div>
-  <div class="skill-grid" id="skillGrid">
-    <!-- populated by JS -->
-  </div>
+  <div class="skill-grid" id="skillGrid"></div>
 </div>
 
-<!-- ═══ FEEDBACK SCREEN ═══ -->
+<!-- ═══ FEEDBACK ═══ -->
 <div id="feedbackScreen" class="screen">
   <div class="fb-header">
     <div class="fb-title" id="fbTitle">FREESTYLE</div>
@@ -802,21 +648,25 @@ html, body {
     <button class="fb-tab" onclick="setFbTab('worst')">Worst</button>
   </div>
 
+  <!-- overall score -->
   <div class="score-hero">
     <span class="score-big" id="fbScoreBig">—</span><span class="score-denom">/10</span>
     <div class="score-context" id="fbScoreContext"></div>
   </div>
 
+  <!-- key cue -->
   <div class="cue-banner" id="fbCueBanner">
     <div class="cue-banner-label">🎯 Key Focus</div>
     <div class="cue-banner-text" id="fbCueText"></div>
   </div>
 
-  <div class="phase-section">
-    <div class="phase-section-title">Phase Breakdown</div>
-    <div id="fbPhaseList"></div>
+  <!-- TRAFFIC-LIGHT CARDS -->
+  <div class="cards-section">
+    <div class="cards-section-title">Phase Breakdown</div>
+    <div class="skill-cards" id="fbSkillCards"></div>
   </div>
 
+  <!-- best / worst -->
   <div class="bw-grid">
     <div class="bw-card best">
       <div class="bw-label">Session Best</div>
@@ -830,8 +680,9 @@ html, body {
     </div>
   </div>
 
+  <!-- coach report -->
   <div class="coach-section" id="coachSection">
-    <div class="coach-section-title">Coach Report — Last Rep</div>
+    <div class="coach-section-title">Coach Report</div>
     <div class="coach-text" id="fbCoachText"></div>
   </div>
 </div>
@@ -844,9 +695,113 @@ html, body {
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// PHASE DIAGRAMS — simple SVG per phase, good vs warn
+// ═══════════════════════════════════════════════════════
+const PHASE_DIAGRAMS = {
+  'Approach': {
+    good: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="90" cy="28" rx="8" ry="5" fill="none" stroke="#00e5a0" stroke-width="1.8"/>
+      <line x1="82" y1="28" x2="20" y2="28" stroke="#00e5a0" stroke-width="2" stroke-linecap="round"/>
+      <line x1="20" y1="28" x2="8" y2="19" stroke="#00e5a0" stroke-width="2" stroke-linecap="round"/>
+      <line x1="82" y1="28" x2="100" y2="36" stroke="#00e5a0" stroke-width="2" stroke-linecap="round"/>
+      <line x1="0" y1="40" x2="120" y2="40" stroke="#0d7ec9" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+      <path d="M108 28 L98 23 M108 28 L98 33" stroke="#29b6f6" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <text x="60" y="52" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">HIPS HIGH · STREAMLINED</text>
+    </svg>`,
+    warn: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="90" cy="24" rx="8" ry="5" fill="none" stroke="#ffab00" stroke-width="1.8"/>
+      <line x1="82" y1="26" x2="40" y2="34" stroke="#ffab00" stroke-width="2" stroke-linecap="round"/>
+      <line x1="40" y1="34" x2="12" y2="26" stroke="#ffab00" stroke-width="2" stroke-linecap="round"/>
+      <path d="M53 32 L53 42" stroke="#ff3d5a" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M53 42 L49 37 M53 42 L57 37" stroke="#ff3d5a" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="0" y1="40" x2="120" y2="40" stroke="#0d7ec9" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+      <text x="60" y="52" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">HIPS DROPPING</text>
+    </svg>`
+  },
+  'Into Wall': {
+    good: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <rect x="108" y="10" width="5" height="36" fill="#1a3a5c" rx="1"/>
+      <ellipse cx="22" cy="28" rx="8" ry="5" fill="none" stroke="#00e5a0" stroke-width="1.8"/>
+      <line x1="30" y1="28" x2="100" y2="28" stroke="#00e5a0" stroke-width="2" stroke-linecap="round"/>
+      <rect x="97" y="24" width="10" height="8" rx="2" fill="none" stroke="#00e5a0" stroke-width="1.8"/>
+      <line x1="0" y1="40" x2="108" y2="40" stroke="#0d7ec9" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+      <text x="55" y="52" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">FLAT TOUCH · LEVEL</text>
+    </svg>`,
+    warn: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <rect x="108" y="10" width="5" height="36" fill="#1a3a5c" rx="1"/>
+      <ellipse cx="22" cy="32" rx="8" ry="5" fill="none" stroke="#ffab00" stroke-width="1.8"/>
+      <line x1="30" y1="30" x2="84" y2="22" stroke="#ffab00" stroke-width="2" stroke-linecap="round"/>
+      <rect x="82" y="17" width="9" height="7" rx="2" fill="none" stroke="#ff3d5a" stroke-width="1.8" transform="rotate(-18 86 21)"/>
+      <path d="M98 12 Q108 20 107 28" stroke="#ff3d5a" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+      <line x1="0" y1="42" x2="108" y2="42" stroke="#0d7ec9" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+      <text x="55" y="52" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">ANGLED / RUSHED</text>
+    </svg>`
+  },
+  'Turn': {
+    good: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <rect x="108" y="8" width="5" height="40" fill="#1a3a5c" rx="1"/>
+      <path d="M95 28 Q80 8 60 18 Q40 28 50 46 Q64 56 84 46" fill="none" stroke="#00e5a0" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="96" cy="28" rx="7" ry="5" fill="none" stroke="#00e5a0" stroke-width="1.8"/>
+      <path d="M68 16 Q58 6 48 16" stroke="#29b6f6" stroke-width="1.5" fill="none"/>
+      <path d="M48 16 L50 10 M48 16 L54 18" stroke="#29b6f6" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <text x="55" y="56" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">TIGHT TUCK · FAST</text>
+    </svg>`,
+    warn: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <rect x="108" y="8" width="5" height="40" fill="#1a3a5c" rx="1"/>
+      <path d="M95 28 Q72 4 40 18 Q14 32 28 50" fill="none" stroke="#ffab00" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+      <ellipse cx="96" cy="28" rx="7" ry="5" fill="none" stroke="#ffab00" stroke-width="1.8"/>
+      <path d="M62 8 Q48 0 34 12" stroke="#ff3d5a" stroke-width="1.5" fill="none"/>
+      <path d="M34 12 L36 6 M34 12 L40 14" stroke="#ff3d5a" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <text x="55" y="56" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">OPEN / SLOW TURN</text>
+    </svg>`
+  },
+  'Push-Off': {
+    good: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <rect x="5" y="10" width="5" height="36" fill="#1a3a5c" rx="1"/>
+      <ellipse cx="20" cy="30" rx="7" ry="5" fill="none" stroke="#00e5a0" stroke-width="1.8"/>
+      <line x1="27" y1="30" x2="106" y2="30" stroke="#00e5a0" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M98 25 L108 30 L98 35" fill="none" stroke="#00e5a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="60" y1="30" x2="60" y2="40" stroke="#29b6f6" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="66" y="44" fill="#29b6f6" font-size="5.5" font-family="monospace">0.5m</text>
+      <line x1="0" y1="20" x2="120" y2="20" stroke="#0d7ec9" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+      <text x="60" y="54" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">DEEP · FLAT · FAST</text>
+    </svg>`,
+    warn: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <rect x="5" y="10" width="5" height="36" fill="#1a3a5c" rx="1"/>
+      <ellipse cx="20" cy="34" rx="7" ry="5" fill="none" stroke="#ffab00" stroke-width="1.8"/>
+      <line x1="27" y1="32" x2="96" y2="18" stroke="#ffab00" stroke-width="2" stroke-linecap="round"/>
+      <path d="M88 13 L98 18 L90 24" fill="none" stroke="#ffab00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="0" y1="17" x2="120" y2="17" stroke="#0d7ec9" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+      <path d="M62 19 L62 13" stroke="#ff3d5a" stroke-width="1.5"/>
+      <text x="60" y="54" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">TOO SHALLOW</text>
+    </svg>`
+  },
+  'Breakout': {
+    good: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="14" cy="34" rx="7" ry="5" fill="none" stroke="#00e5a0" stroke-width="1.8"/>
+      <path d="M21 34 Q50 34 68 26 Q88 18 106 18" fill="none" stroke="#00e5a0" stroke-width="2" stroke-linecap="round"/>
+      <path d="M98 14 L108 18 L98 22" fill="none" stroke="#00e5a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M30 36 Q35 42 40 36 Q45 30 50 36" fill="none" stroke="#29b6f6" stroke-width="1.2" opacity="0.7"/>
+      <line x1="0" y1="20" x2="120" y2="20" stroke="#0d7ec9" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+      <text x="60" y="54" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">KICK THEN RISE</text>
+    </svg>`,
+    warn: `<svg viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="14" cy="34" rx="7" ry="5" fill="none" stroke="#ffab00" stroke-width="1.8"/>
+      <path d="M21 34 Q30 34 38 20" fill="none" stroke="#ffab00" stroke-width="2" stroke-linecap="round"/>
+      <path d="M38 20 Q60 10 90 12 Q105 13 110 14" fill="none" stroke="#ffab00" stroke-width="2" stroke-linecap="round"/>
+      <path d="M102 10 L112 14 L102 18" fill="none" stroke="#ffab00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="38" y1="8" x2="38" y2="22" stroke="#ff3d5a" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="37" y="7" fill="#ff3d5a" font-size="5.5" text-anchor="middle" font-family="monospace">EARLY</text>
+      <line x1="0" y1="16" x2="120" y2="16" stroke="#0d7ec9" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+      <text x="60" y="54" fill="#4a7a9b" font-size="6.5" text-anchor="middle" font-family="monospace">SURFACING EARLY</text>
+    </svg>`
+  }
+};
+
+// ═══════════════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 const SKILLS = [
   { id: 'freestyle',    name: 'Freestyle',    icon: '🏊' },
   { id: 'backstroke',   name: 'Backstroke',   icon: '🔄' },
@@ -859,10 +814,9 @@ const SKILLS = [
 let apiKey       = '';
 let swimmerName  = '';
 let sessionStart = null;
-let sessionTimer = null;
+let timerInterval = null;
 
-// DB: { skillId: [ repResult, ... ] }
-// repResult: { ts, stroke, overall, key_cue, phases, coach_report }
+// db[skillId] = [ { ts, stroke, overall, key_cue, phases, coach_report, frameDataUrl }, ... ]
 let db = {};
 
 let motionFrames   = [];
@@ -872,25 +826,29 @@ let repInProgress  = false;
 let motionTimeout  = null;
 let captureCanvas  = null;
 let captureCtx     = null;
+let repFrameData   = null;
+let repFrameDataUrl = null; // for thumbnail display
 
 let currentSkillId = null;
 let currentFbTab   = 'last';
 
-// ═══════════════════════════════════════════════
+const MOTION_THRESHOLD  = 28;
+const MOTION_PIXELS_PCT = 0.04;
+const MOTION_HOLD_MS    = 2200;
+
+// ═══════════════════════════════════════════════════════
 // SETUP
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 async function startSession() {
   apiKey      = document.getElementById('apiKeyInput').value.trim();
   swimmerName = document.getElementById('swimmerInput').value.trim() || 'Swimmer';
   if (!apiKey) { alert('Please enter your Anthropic API key.'); return; }
 
-  // Init DB buckets
   SKILLS.forEach(s => { db[s.id] = []; });
-
   showScreen('liveScreen');
   document.getElementById('swimmerLabel').textContent = swimmerName;
   sessionStart = Date.now();
-  sessionTimer = setInterval(updateTimer, 1000);
+  timerInterval = setInterval(updateTimer, 1000);
   buildSkillGrid();
   await startCamera();
   startMotionDetection();
@@ -903,9 +861,9 @@ function updateTimer() {
     String(m).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0');
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // CAMERA
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -915,8 +873,6 @@ async function startCamera() {
     const cam = document.getElementById('camFeed');
     cam.srcObject = stream;
     await new Promise(r => cam.onloadedmetadata = r);
-
-    // Setup motion canvas
     captureCanvas = document.getElementById('motionCanvas');
     captureCanvas.width  = cam.videoWidth;
     captureCanvas.height = cam.videoHeight;
@@ -926,16 +882,10 @@ async function startCamera() {
   }
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // MOTION DETECTION
-// ═══════════════════════════════════════════════
-const MOTION_THRESHOLD  = 28;   // pixel diff threshold per channel
-const MOTION_PIXELS_PCT = 0.04; // 4% of pixels must change
-const MOTION_HOLD_MS    = 2200; // hold after last motion before rep ends
-
-function startMotionDetection() {
-  requestAnimationFrame(motionLoop);
-}
+// ═══════════════════════════════════════════════════════
+function startMotionDetection() { requestAnimationFrame(motionLoop); }
 
 function motionLoop() {
   if (!captureCtx) { requestAnimationFrame(motionLoop); return; }
@@ -947,11 +897,8 @@ function motionLoop() {
 
   if (lastFrame) {
     const moved = motionScore(lastFrame.data, cur.data, captureCanvas.width * captureCanvas.height);
-    if (moved > MOTION_PIXELS_PCT) {
-      onMotionDetected(cam);
-    } else {
-      onMotionAbsent();
-    }
+    if (moved > MOTION_PIXELS_PCT) onMotionDetected(cam);
+    else onMotionAbsent();
   }
 
   lastFrame = cur;
@@ -960,38 +907,30 @@ function motionLoop() {
 
 function motionScore(a, b, total) {
   let changed = 0;
-  // Sample every 8th pixel for speed
   for (let i = 0; i < a.length; i += 32) {
     const dr = Math.abs(a[i]   - b[i]);
     const dg = Math.abs(a[i+1] - b[i+1]);
-    const db = Math.abs(a[i+2] - b[i+2]);
-    if ((dr + dg + db) / 3 > MOTION_THRESHOLD) changed++;
+    const db2 = Math.abs(a[i+2] - b[i+2]);
+    if ((dr + dg + db2) / 3 > MOTION_THRESHOLD) changed++;
   }
   return changed / (total / 8);
 }
 
 function onMotionDetected(cam) {
   if (motionTimeout) { clearTimeout(motionTimeout); motionTimeout = null; }
-
   if (!swimmerPresent) {
     swimmerPresent = true;
     document.getElementById('waitingState').classList.add('hidden');
     document.getElementById('detectingState').classList.remove('hidden');
   }
-
   if (!repInProgress) {
     repInProgress = true;
-    // Capture a frame ~1s after detection (swimmer filling frame)
     setTimeout(() => captureRepFrame(cam), 1000);
   }
-
-  // Set timer: if no more motion for MOTION_HOLD_MS → rep ended
   motionTimeout = setTimeout(onRepEnded, MOTION_HOLD_MS);
 }
 
-function onMotionAbsent() {
-  // motionTimeout already handles the end; nothing else needed here
-}
+function onMotionAbsent() { /* handled by motionTimeout */ }
 
 function onRepEnded() {
   if (!swimmerPresent) return;
@@ -1001,58 +940,63 @@ function onRepEnded() {
   document.getElementById('waitingState').classList.remove('hidden');
 }
 
-let repFrameData = null;
-
 function captureRepFrame(cam) {
-  // Grab the current frame as base64 JPEG for API
   const c = document.createElement('canvas');
   c.width  = cam.videoWidth;
   c.height = cam.videoHeight;
   c.getContext('2d').drawImage(cam, 0, 0);
-  repFrameData = c.toDataURL('image/jpeg', 0.82).split(',')[1];
+  repFrameDataUrl = c.toDataURL('image/jpeg', 0.82);
+  repFrameData    = repFrameDataUrl.split(',')[1];
   analyseRep();
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // ANALYSIS
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 async function analyseRep() {
   if (!repFrameData) return;
   showAnalysing(true);
 
   const prompt = `You are SomaForm, a poolside swimming technique analyser grounded in the biomechanical framework of Dr. Ernest W. Maglischo (Swimming Fastest, 2003).
 
-This frame is from a camera at the END of a swimming lane. Analyse what you can see:
-- Stroke/skill type (auto-detect from the image)
-- Approach mechanics (if visible)
-- Into the wall / touch position
-- Turn execution
-- Push-off angle and streamline
-- Breakout
+This frame is from a camera at the END of a swimming lane. Analyse what you can see.
 
 Respond ONLY with valid JSON, no markdown, no preamble:
 
 {
   "stroke": "freestyle|backstroke|breaststroke|butterfly|turn|pushoff|unknown",
   "overall": <0-10>,
-  "key_cue": "<single most important coaching point, plain language, max 12 words>",
+  "key_cue": "<single most important coaching cue in plain spoken language, max 12 words>",
   "phases": [
-    { "name": "Approach",  "score": <0-10>, "visible": true|false },
-    { "name": "Into Wall", "score": <0-10>, "visible": true|false },
-    { "name": "Turn",      "score": <0-10>, "visible": true|false },
-    { "name": "Push-Off",  "score": <0-10>, "visible": true|false },
-    { "name": "Breakout",  "score": <0-10>, "visible": true|false }
+    {
+      "name": "Approach",
+      "score": <0-10>,
+      "visible": true|false,
+      "cue": "<one short coaching cue, plain spoken language, max 10 words>",
+      "detail": "<one sentence: what you saw and why it matters, no jargon>"
+    },
+    { "name": "Into Wall", "score": <0-10>, "visible": true|false, "cue": "...", "detail": "..." },
+    { "name": "Turn",      "score": <0-10>, "visible": true|false, "cue": "...", "detail": "..." },
+    { "name": "Push-Off",  "score": <0-10>, "visible": true|false, "cue": "...", "detail": "..." },
+    { "name": "Breakout",  "score": <0-10>, "visible": true|false, "cue": "...", "detail": "..." }
   ],
-  "coach_report": "<biomechanical detail for the coach, 100-180 words, reference Maglischo principles>"
-}`;
+  "coach_report": "<2-3 sentences for the coach, plain language, reference Maglischo principles>"
+}
+
+Use encouraging, plain spoken coaching language throughout — as if talking to a swimmer poolside.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 1200,
         messages: [{
           role: 'user',
           content: [
@@ -1062,15 +1006,18 @@ Respond ONLY with valid JSON, no markdown, no preamble:
         }]
       })
     });
+
     const data  = await res.json();
     const raw   = (data.content || []).map(b => b.text || '').join('');
     const clean = raw.replace(/```json|```/g,'').trim();
     const rep   = JSON.parse(clean);
-    rep.ts      = Date.now();
+    rep.ts           = Date.now();
+    rep.frameDataUrl = repFrameDataUrl;
 
     saveRep(rep);
     updateLastRepMini(rep);
-    repFrameData = null;
+    repFrameData    = null;
+    repFrameDataUrl = null;
   } catch(e) {
     console.error('Analysis error:', e);
   } finally {
@@ -1079,29 +1026,27 @@ Respond ONLY with valid JSON, no markdown, no preamble:
 }
 
 function saveRep(rep) {
-  // Map detected stroke to skill bucket
   const skillId = mapStrokeToSkill(rep.stroke);
   if (!db[skillId]) db[skillId] = [];
   db[skillId].push(rep);
 
-  // Also save to 'all' if you want cross-skill aggregates later
   const count = Object.values(db).reduce((s,a) => s + a.length, 0);
   document.getElementById('repCountLabel').textContent = count + (count === 1 ? ' rep' : ' reps');
-  buildSkillGrid(); // refresh counts
+  buildSkillGrid();
 }
 
 function mapStrokeToSkill(stroke) {
   const map = {
-    freestyle: 'freestyle', backstroke: 'backstroke',
-    breaststroke: 'breaststroke', butterfly: 'butterfly',
-    turn: 'turn', pushoff: 'pushoff', push_off: 'pushoff'
+    freestyle:'freestyle', backstroke:'backstroke',
+    breaststroke:'breaststroke', butterfly:'butterfly',
+    turn:'turn', pushoff:'pushoff', push_off:'pushoff'
   };
   return map[stroke] || 'freestyle';
 }
 
-// ═══════════════════════════════════════════════
-// UI UPDATES
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// LIVE SCREEN UI
+// ═══════════════════════════════════════════════════════
 function updateLastRepMini(rep) {
   const cls = scoreClass(rep.overall);
   const el  = document.getElementById('lrmScore');
@@ -1120,7 +1065,7 @@ function buildSkillGrid() {
     const avg   = count ? (reps.reduce((s,r) => s + r.overall, 0) / count).toFixed(1) : null;
     const btn   = document.createElement('button');
     btn.className = 'skill-btn' + (count > 0 ? ' has-data' : '');
-    if (count > 0) btn.setAttribute('data-count', count + ' rep' + (count>1?'s':''));
+    if (count > 0) btn.setAttribute('data-count', count + ' rep' + (count > 1 ? 's' : ''));
     btn.innerHTML = `
       <div class="skill-icon">${skill.icon}</div>
       <div class="skill-name">${skill.name.toUpperCase()}</div>
@@ -1130,137 +1075,179 @@ function buildSkillGrid() {
   });
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // FEEDBACK SCREEN
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 function showFeedback(skillId) {
   const reps = db[skillId] || [];
   if (!reps.length) {
-    alert('No reps recorded for this skill yet this session.');
+    alert('No reps recorded for this skill yet.');
     return;
   }
   currentSkillId = skillId;
   currentFbTab   = 'last';
 
   const skill = SKILLS.find(s => s.id === skillId);
-  document.getElementById('fbTitle').textContent = (skill?.icon || '') + ' ' + (skill?.name || skillId).toUpperCase();
+  document.getElementById('fbTitle').textContent = (skill?.name || skillId).toUpperCase();
 
-  // Pre-fill best/worst always visible
-  const sorted = [...reps].sort((a,b) => b.overall - a.overall);
-  const best   = sorted[0];
-  const worst  = sorted[sorted.length - 1];
-  document.getElementById('bwBestScore').textContent  = best.overall.toFixed(1);
-  document.getElementById('bwBestCue').textContent    = best.key_cue || '';
-  document.getElementById('bwWorstScore').textContent = worst.overall.toFixed(1);
-  document.getElementById('bwWorstCue').textContent   = worst.key_cue || '';
+  document.querySelectorAll('.fb-tab').forEach((t,i) =>
+    t.classList.toggle('active', i === 0)
+  );
 
-  renderFbTab('last');
+  renderFeedback(reps);
   showScreen('feedbackScreen');
 }
 
 function setFbTab(tab) {
   currentFbTab = tab;
-  document.querySelectorAll('.fb-tab').forEach(b =>
-    b.classList.toggle('active', b.textContent.toLowerCase().startsWith(tab.slice(0,3)))
+  document.querySelectorAll('.fb-tab').forEach(t =>
+    t.classList.toggle('active', t.textContent.toLowerCase().includes(tab.slice(0,3)))
   );
-  renderFbTab(tab);
+  const reps = db[currentSkillId] || [];
+  renderFeedback(reps);
 }
 
-function renderFbTab(tab) {
-  const reps = db[currentSkillId] || [];
-  if (!reps.length) return;
+function renderFeedback(reps) {
+  let rep;
+  const sorted = [...reps].sort((a,b) => b.overall - a.overall);
 
-  let rep, contextLabel;
-
-  if (tab === 'last') {
-    rep = reps[reps.length - 1];
-    contextLabel = 'Most recent rep';
-  } else if (tab === 'avg') {
-    rep = averageRep(reps);
-    contextLabel = `Average of ${reps.length} rep${reps.length>1?'s':''}`;
-  } else if (tab === 'best') {
-    rep = [...reps].sort((a,b) => b.overall - a.overall)[0];
-    contextLabel = 'Best rep this session';
-  } else {
-    rep = [...reps].sort((a,b) => a.overall - b.overall)[0];
-    contextLabel = 'Worst rep this session';
+  if      (currentFbTab === 'last')  rep = reps[reps.length - 1];
+  else if (currentFbTab === 'best')  rep = sorted[0];
+  else if (currentFbTab === 'worst') rep = sorted[sorted.length - 1];
+  else {
+    // Average: synthesise a rep-like object
+    rep = buildAvgRep(reps);
   }
 
+  // Overall score
   const cls = scoreClass(rep.overall);
-  const scoreEl = document.getElementById('fbScoreBig');
-  scoreEl.textContent = Number(rep.overall).toFixed(1);
-  scoreEl.className   = `score-big score-${cls}`;
-  document.getElementById('fbScoreContext').textContent = contextLabel;
-  document.getElementById('fbCueText').textContent      = rep.key_cue || '';
+  const scoreBig = document.getElementById('fbScoreBig');
+  scoreBig.textContent = rep.overall.toFixed(1);
+  scoreBig.className   = `score-big score-${cls}`;
 
-  // phases
-  const phaseList = document.getElementById('fbPhaseList');
-  phaseList.innerHTML = '';
-  (rep.phases || []).filter(p => p.visible !== false).forEach(p => {
-    const pc  = scoreClass(p.score);
-    const row = document.createElement('div');
-    row.className = 'phase-row';
-    row.innerHTML = `
-      <div class="phase-name-col">${p.name}</div>
-      <div class="phase-bar-track">
-        <div class="phase-bar-fill fill-${pc}" style="width:${(p.score/10)*100}%"></div>
+  const ctx = currentFbTab === 'avg'
+    ? `Average of ${reps.length} rep${reps.length > 1 ? 's' : ''}`
+    : currentFbTab === 'last'  ? 'Most recent rep'
+    : currentFbTab === 'best'  ? 'Session best'
+    : 'Session worst';
+  document.getElementById('fbScoreContext').textContent = ctx;
+
+  // Key cue
+  document.getElementById('fbCueText').textContent = rep.key_cue || '—';
+
+  // Traffic-light skill cards
+  renderSkillCards(rep);
+
+  // Best / worst summary
+  document.getElementById('bwBestScore').textContent  = sorted[0].overall.toFixed(1);
+  document.getElementById('bwBestCue').textContent    = sorted[0].key_cue || '';
+  document.getElementById('bwWorstScore').textContent = sorted[sorted.length-1].overall.toFixed(1);
+  document.getElementById('bwWorstCue').textContent   = sorted[sorted.length-1].key_cue || '';
+
+  // Coach report
+  document.getElementById('fbCoachText').textContent = rep.coach_report || '';
+}
+
+function renderSkillCards(rep) {
+  const container = document.getElementById('fbSkillCards');
+  container.innerHTML = '';
+
+  const visiblePhases = (rep.phases || []).filter(p => p.visible);
+
+  visiblePhases.forEach((phase, i) => {
+    const status  = scoreStatus(phase.score);
+    const diagKey = phase.name in PHASE_DIAGRAMS ? phase.name : 'Approach';
+    const svg     = status === 'green'
+      ? PHASE_DIAGRAMS[diagKey].good
+      : PHASE_DIAGRAMS[diagKey].warn;
+
+    const thumbHtml = rep.frameDataUrl
+      ? `<img src="${rep.frameDataUrl}" alt="rep frame">`
+      : `<div class="no-thumb">Last<br>Rep</div>`;
+
+    const card = document.createElement('div');
+    card.className = `skill-card status-${status}`;
+    card.style.animationDelay = `${i * 0.06}s`;
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-thumb">${thumbHtml}</div>
+        <div class="card-diagram">${svg}</div>
+        <div class="card-status">
+          <div class="status-dot">${statusIcon(status)}</div>
+          <div class="status-word">${statusWord(status)}</div>
+          <div class="status-score">${phase.score.toFixed(1)}</div>
+        </div>
       </div>
-      <div class="phase-score-col score-${pc}">${Number(p.score).toFixed(1)}</div>`;
-    phaseList.appendChild(row);
+      <div class="card-body">
+        <div class="card-phase-name">${phase.name}</div>
+        <div class="card-cue">${phase.cue || ''}</div>
+        ${phase.detail ? `<div class="card-detail">${phase.detail}</div>` : ''}
+      </div>`;
+    container.appendChild(card);
   });
-
-  // coach report (last rep only makes narrative sense)
-  const coachEl = document.getElementById('fbCoachText');
-  const lastRep = reps[reps.length - 1];
-  coachEl.textContent = lastRep.coach_report || '';
-  document.getElementById('coachSection').querySelector('.coach-section-title').textContent =
-    tab === 'last' ? 'Coach Report — Last Rep' : 'Coach Report — Last Rep (for reference)';
 }
 
-function averageRep(reps) {
-  // Average overall and each phase score
-  const n = reps.length;
-  const avgOverall = reps.reduce((s,r) => s + r.overall, 0) / n;
-
-  // Merge phases
-  const phaseNames = (reps[0].phases || []).map(p => p.name);
-  const avgPhases  = phaseNames.map(name => {
-    const visible  = reps.some(r => (r.phases||[]).find(p => p.name === name)?.visible);
-    const scores   = reps.map(r => (r.phases||[]).find(p => p.name === name)?.score || 0);
-    return { name, score: scores.reduce((a,b) => a+b, 0) / n, visible };
+function buildAvgRep(reps) {
+  // Synthesise an averaged rep for display
+  const overall = reps.reduce((s,r) => s + r.overall, 0) / reps.length;
+  const last = reps[reps.length - 1];
+  // Average phase scores across reps
+  const phaseMap = {};
+  reps.forEach(r => {
+    (r.phases || []).filter(p => p.visible).forEach(p => {
+      if (!phaseMap[p.name]) phaseMap[p.name] = { scores: [], sample: p };
+      phaseMap[p.name].scores.push(p.score);
+    });
   });
-
-  // Most common key_cue (just use last rep's)
-  return {
-    overall: avgOverall,
-    key_cue: reps[reps.length-1].key_cue,
-    phases:  avgPhases,
-    coach_report: reps[reps.length-1].coach_report
-  };
+  const phases = Object.entries(phaseMap).map(([name, d]) => ({
+    name,
+    score: d.scores.reduce((s,v) => s + v, 0) / d.scores.length,
+    visible: true,
+    cue: d.sample.cue,
+    detail: d.sample.detail
+  }));
+  return { overall, key_cue: last.key_cue, phases, coach_report: last.coach_report, frameDataUrl: last.frameDataUrl };
 }
 
-// ═══════════════════════════════════════════════
-// SCREEN NAVIGATION
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function scoreStatus(score) {
+  if (score >= 7.5) return 'green';
+  if (score >= 5)   return 'amber';
+  return 'red';
+}
+
+function scoreClass(score) {
+  if (score >= 7.5) return 'high';
+  if (score >= 5)   return 'mid';
+  return 'low';
+}
+
+function statusIcon(status) {
+  if (status === 'green') return '✓';
+  if (status === 'amber') return '~';
+  return '!';
+}
+
+function statusWord(status) {
+  if (status === 'green') return 'GOOD';
+  if (status === 'amber') return 'OK';
+  return 'WORK ON';
+}
+
+function showAnalysing(show) {
+  document.getElementById('analysingOverlay').classList.toggle('active', show);
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function showMenu()     { buildSkillGrid(); showScreen('menuScreen'); }
-function showLive()     { showScreen('liveScreen'); }
-function showAnalysing(on) {
-  document.getElementById('analysingOverlay').classList.toggle('active', on);
-}
-
-// ═══════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════
-function scoreClass(s) {
-  if (s >= 7.5) return 'high';
-  if (s >= 5)   return 'mid';
-  return 'low';
-}
+function showLive() { showScreen('liveScreen'); }
+function showMenu() { showScreen('menuScreen'); }
 </script>
 </body>
 </html>
+
