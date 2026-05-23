@@ -122,7 +122,7 @@ canvas { display:none; }
     <option>Other</option>
   </select>
 
-  <input id="key" placeholder="Session Key (optional)" />
+  <!-- ONLY REQUIRED FIELD -->
   <input id="apiKey" placeholder="Anthropic API Key" />
 
   <button onclick="start()">Start Session</button>
@@ -167,7 +167,6 @@ function start(){
     name: document.getElementById('name').value,
     age: document.getElementById('age').value,
     gender: document.getElementById('gender').value,
-    key: document.getElementById('key').value,
     apiKey: document.getElementById('apiKey').value
   };
 
